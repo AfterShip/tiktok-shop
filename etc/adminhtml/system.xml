@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="tiktok_shop_feed" translate="label" sortOrder="10">
+            <label>TikTok Shop</label>
+        </tab>
+
+        <section id="tiktok_shop_feed_connect" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Connect</label>
+            <tab>tiktok_shop_feed</tab>
+            <resource>AfterShip_TikTokShop::tiktok_shop_feed_connect</resource>
+            <group id="connect_link" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+		    <label>Connect with TikTok Shop</label>
+		    <comment><![CDATA[<a href="#"><img src="https://assets.aftership.com/apps/images/connect_magento2_with_feed.png" alt="Connect with TikTok Shop"></a><style type="text/css">table.form-list{display: none}</style>]]></comment>
+		    <field id="useless" translate="label" type="note" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+			</field>
+		</group>
+        </section>
+    </system>
+</config>
+

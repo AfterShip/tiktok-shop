@@ -1,0 +1,30 @@
+{
+    "name": "aftership/tiktok-shop",
+    "description": "Aftership TikTok Shop extension for Magento 2. Allows connect with TikTok Shop and more.",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "keywords": ["aftership", "magento", "magento2", "magento-2", "tiktok", "shopping", "shop", "feed"],
+    "authors": [
+        {
+            "name": "AfterShip",
+            "email": "support@aftership.com"
+        }
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "AfterShip\\TikTokShop\\": ""
+        }
+    },
+    "config": {
+        "optimize-autoloader": true
+    },
+    "require": {
+        "php": ">=7.1.0",
+        "magento/module-quote": ">=101.1.3"
+    }
+}
