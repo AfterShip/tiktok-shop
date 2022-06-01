@@ -11,7 +11,7 @@
             <resource>AfterShip_TikTokShop::tiktok_shop_feed_connect</resource>
             <group id="connect_link" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
 		    <label>Connect with TikTok Shop</label>
-		    <comment><![CDATA[<a href="#"><img src="https://assets.aftership.com/apps/images/connect_magento2_with_feed.png" alt="Connect with TikTok Shop"></a><style type="text/css">table.form-list{display: none}</style>]]></comment>
+		    <comment><![CDATA[<a target="_blank" href="https://feed.automizely.com/apps/request-grant/magento-2?app_id=e46c2ca7087944939425fa1e296f1ee5"><img src="https://assets.aftership.com/apps/images/connect_magento2_with_feed.png" alt="Connect with TikTok Shop"></a><style type="text/css">table.form-list{display: none}</style>]]></comment>
 		    <field id="useless" translate="label" type="note" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
 			</field>
 		</group>
