@@ -1,0 +1,26 @@
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/aftership/webhooks" method="POST">
+        <service class="AfterShip\TikTokShop\Api\WebhookManagementInterface" method="registerWebhook"/>
+        <resources>
+            <resource ref="Magento_Backend::store"/>
+        </resources>
+    </route>
+    <route url="/V1/aftership/webhooks" method="GET">
+        <service class="AfterShip\TikTokShop\Api\WebhookManagementInterface" method="listWebhooks"/>
+        <resources>
+            <resource ref="Magento_Backend::store"/>
+        </resources>
+    </route>
+    <route url="/V1/aftership/webhooks/:webhookId" method="GET">
+        <service class="AfterShip\TikTokShop\Api\WebhookManagementInterface" method="getWebhook"/>
+        <resources>
+            <resource ref="Magento_Backend::store"/>
+        </resources>
+    </route>
+    <route url="/V1/aftership/webhooks/:webhookId" method="DELETE">
+        <service class="AfterShip\TikTokShop\Api\WebhookManagementInterface" method="deleteWebhook"/>
+        <resources>
+            <resource ref="Magento_Backend::store"/>
+        </resources>
+    </route>
+</routes>
