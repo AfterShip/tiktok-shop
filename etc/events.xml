@@ -1,0 +1,14 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_save_after">
+        <observer name="ProductSaveObserver" instance="AfterShip\TikTokShop\Observer\ProductSaveObserver" />
+    </event>
+    <event name="cataloginventory_stock_item_save_after">
+        <observer name="InventoryUpdateObserver" instance="AfterShip\TikTokShop\Observer\InventoryUpdateObserver" />
+    </event>
+    <event name="sales_order_save_after">
+        <observer name="SalesOrderUpdateObserver" instance="AfterShip\TikTokShop\Observer\SalesOrderUpdateObserver" />
+    </event>
+    <event name="catalog_product_delete_after">
+        <observer name="ProductDeleteObserver" instance="AfterShip\TikTokShop\Observer\ProductDeleteObserver" />
+    </event>
+</config>
