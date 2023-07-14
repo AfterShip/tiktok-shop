@@ -31,32 +31,32 @@ class WebhookManagement implements WebhookManagementInterface
 {
 
     /**
-     * IntegrationId.
+     * The Integration Id.
      *
      * @var int|null
      */
     protected $integrationId;
     /**
-     * ScopeConfig.
+     * ScopeConfig Instance.
      *
      * @var ScopeConfigInterface
      */
     protected $scopeConfig;
     /**
-     * ConfigWriter.
+     * ConfigWriter Instance.
      *
      * @var WriterInterface
      */
     protected $configWriter;
     /**
-     * CacheTypeList.
+     * CacheTypeList Instance.
      *
      * @var TypeListInterface
      */
     protected $cacheTypeList;
 
     /**
-     * Webhooks.
+     * Array of Webhook.
      *
      * @var array
      */

@@ -30,21 +30,21 @@ class RecurringData implements InstallDataInterface
 {
 
     /**
-     * StoreRepositoryInterface
+     * StoreRepositoryInterface Instance.
      *
      * @var StoreRepositoryInterface
      */
     protected $storeRepository;
 
     /**
-     * IntegrationServiceInterface
+     * IntegrationServiceInterface Instance.
      *
      * @var IntegrationServiceInterface
      */
     protected $integrationService;
 
     /**
-     * AuthorizationServiceInterface
+     * AuthorizationServiceInterface Instance.
      *
      * @var AuthorizationServiceInterface $authorizationService
      */

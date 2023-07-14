@@ -30,37 +30,37 @@ use Psr\Log\LoggerInterface;
 class ProductSaveObserver implements ObserverInterface
 {
     /**
-     * ProductRepositoryInterface
+     * ProductRepositoryInterface Instance.
      *
      * @var ProductRepositoryInterface
      */
     protected $productRepository;
     /**
-     * Configurable
+     * Configurable Instance.
      *
      * @var Configurable
      */
     protected $configurable;
     /**
-     * Grouped
+     * Grouped Instance.
      *
      * @var Grouped
      */
     protected $grouped;
     /**
-     * Bundle
+     * Bundle Instance.
      *
      * @var Bundle
      */
     protected $bundle;
     /**
-     * WebhookHelper
+     * WebhookHelper Instance.
      *
      * @var WebhookHelper
      */
     protected $webhookHelper;
     /**
-     * LoggerInterface
+     * LoggerInterface Instance.
      *
      * @var LoggerInterface
      */
@@ -121,7 +121,9 @@ class ProductSaveObserver implements ObserverInterface
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
             $parentIds = $this->getParentProductIds($productId);
-            $topic = (count($parentIds) === 0) ? Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE : Constants::WEBHOOK_TOPIC_VARIANTS_UPDATE;
+            $topic = (count($parentIds) === 0) ?
+                Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE :
+                Constants::WEBHOOK_TOPIC_VARIANTS_UPDATE;
             // Send webhook.
             $this->webhookHelper->makeWebhookRequest(
                 $topic,
@@ -139,7 +141,12 @@ class ProductSaveObserver implements ObserverInterface
                    $this->productRepository->save($parentProduct);
             }
         } catch (\Exception $e) {
-            $this->logger->error(sprintf('[AfterShip TikTokShop] Faield to update product data on ProductSaveObserver, %s', $e->getMessage()));
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] Faield to update product data on ProductSaveObserver, %s',
+                    $e->getMessage()
+                )
+            );
         }
     }
 }

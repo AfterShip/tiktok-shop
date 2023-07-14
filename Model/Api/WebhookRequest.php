@@ -29,7 +29,16 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
      */
     public function getId()
     {
-        return hash_hmac('sha256', $this->_getData(self::DATA_APP_KEY).'-'.$this->_getData(self::DATA_TOPIC).'-'.$this->_getData(self::DATA_ADDRESS), 'id');
+        return hash_hmac(
+            'sha256',
+            sprintf(
+                "%s-%s-%s",
+                $this->_getData(self::DATA_APP_KEY),
+                $this->_getData(self::DATA_TOPIC),
+                $this->_getData(self::DATA_ADDRESS)
+            ),
+            'id'
+        );
     }
     /**
      * GetTopic

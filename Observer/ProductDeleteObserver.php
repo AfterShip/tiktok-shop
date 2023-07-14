@@ -27,19 +27,19 @@ use Psr\Log\LoggerInterface;
 class ProductDeleteObserver implements ObserverInterface
 {
     /**
-     * ProductRepositoryInterface
+     * ProductRepositoryInterface Instance.
      *
      * @var ProductRepositoryInterface
      */
     protected $productRepository;
     /**
-     * WebhookHelper
+     * WebhookHelper Instance.
      *
      * @var WebhookHelper
      */
     protected $webhookHelper;
     /**
-     * LoggerInterface
+     * LoggerInterface Instance.
      *
      * @var LoggerInterface
      */
@@ -61,7 +61,6 @@ class ProductDeleteObserver implements ObserverInterface
         $this->logger = $logger;
         $this->webhookHelper = $webhookHelper;
     }
-
 
     /**
      * Execute
@@ -87,7 +86,12 @@ class ProductDeleteObserver implements ObserverInterface
                 ]
             );
         } catch (\Exception $e) {
-            $this->logger->error(sprintf('[AfterShip TikTokShop] Faield to send webhook on ProductDeleteObserver, %s', $e->getMessage()));
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] Faield to send webhook on ProductDeleteObserver, %s',
+                    $e->getMessage()
+                )
+            );
         }
     }
 }

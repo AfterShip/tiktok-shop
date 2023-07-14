@@ -27,13 +27,13 @@ use Psr\Log\LoggerInterface;
 class SalesOrderUpdateObserver implements ObserverInterface
 {
     /**
-     * LoggerInterface
+     * LoggerInterface Instance.
      *
      * @var LoggerInterface
      */
     protected $logger;
     /**
-     * WebhookHelper
+     * WebhookHelper Instance.
      *
      * @var WebhookHelper
      */
@@ -74,7 +74,12 @@ class SalesOrderUpdateObserver implements ObserverInterface
                 ]
             );
         } catch (\Exception $e) {
-            $this->logger->error(sprintf('[AfterShip TikTokShop] Faield to send order webhook on OrderUpdateObserver, %s', $e->getMessage()));
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] Faield to send order webhook on OrderUpdateObserver, %s',
+                    $e->getMessage()
+                )
+            );
         }
     }
 }

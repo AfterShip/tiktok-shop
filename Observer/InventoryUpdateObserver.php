@@ -32,13 +32,13 @@ use Psr\Log\LoggerInterface;
 class InventoryUpdateObserver implements ObserverInterface
 {
     /**
-     * ProductRepositoryInterface
+     * ProductRepositoryInterface Instance.
      *
      * @var ProductRepositoryInterface
      */
     protected $productRepository;
     /**
-     * Configurable
+     * Configurable Instance.
      *
      * @var Configurable
      */
@@ -130,7 +130,12 @@ class InventoryUpdateObserver implements ObserverInterface
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->error(sprintf('[AfterShip TikTokShop] Faield to update product data on InventoryUpdateObserver, %s', $e->getMessage()));
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] Faield to update product data on InventoryUpdateObserver, %s',
+                    $e->getMessage()
+                )
+            );
         }
     }
 }

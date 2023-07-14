@@ -19,11 +19,11 @@ namespace AfterShip\TikTokShop\Api;
  */
 interface WebhookEntityInterface
 {
-    const DATA_ID = 'id';
-    const DATA_TOPIC = 'topic';
-    const DATA_APP_KEY = 'app_key';
-    const DATA_ADDRESS = 'address';
-    const DATA_INTEGRATION_ID = 'integration_id';
+    public const DATA_ID = 'id';
+    public const DATA_TOPIC = 'topic';
+    public const DATA_APP_KEY = 'app_key';
+    public const DATA_ADDRESS = 'address';
+    public const DATA_INTEGRATION_ID = 'integration_id';
 
     /**
      * GetId
@@ -55,7 +55,6 @@ interface WebhookEntityInterface
      * @return string
      */
     public function getIntegrationId();
-
 
     /**
      * SetId

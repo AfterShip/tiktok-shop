@@ -27,7 +27,6 @@ use Psr\Log\LoggerInterface;
 class WebhookHelper
 {
 
-
     /**
      * Webhoks
      *
@@ -35,25 +34,25 @@ class WebhookHelper
      */
     protected $webhooks = [];
     /**
-     * ScopeConfig
+     * ScopeConfig Instance
      *
      * @var ScopeConfigInterface
      */
     protected $scopeConfig;
     /**
-     * OauthService
+     * OauthService Instance
      *
      * @var OauthServiceInterface
      */
     protected $oauthService;
     /**
-     * IntegrationService
+     * IntegrationService Instance
      *
      * @var IntegrationServiceInterface
      */
     protected $integrationService;
     /**
-     * Logger
+     * Logger Instance
      *
      * @var LoggerInterface
      */
@@ -132,7 +131,14 @@ class WebhookHelper
         $response = curl_exec($curl);
         $err = curl_errno($curl);
         if ($err) {
-            $this->logger->error(sprintf('[AfterShip TikTokShop] Unable to send webhook to %s with data: %s, response: %s', $webhook->address, json_encode($data), $response));
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] Unable to send webhook to %s with data: %s, response: %s',
+                    $webhook->address,
+                    json_encode($data),
+                    $response
+                )
+            );
         }
         curl_close($curl);
         return $response;

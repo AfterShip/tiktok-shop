@@ -28,19 +28,19 @@ use AfterShip\TikTokShop\Constants;
 class StoreConfigExtensionAttributes
 {
     /**
-     * UserContextInterface
+     * UserContextInterface Instance.
      *
      * @var UserContextInterface
      */
     protected $userContext;
     /**
-     * IntegrationServiceInterface
+     * IntegrationServiceInterface Instance.
      *
      * @var IntegrationServiceInterface
      */
     protected $integrationService;
     /**
-     * Ref to StoreConfigExtensionFactory
+     * StoreConfigExtensionFactory Instance.
      *
      * @var StoreConfigExtensionFactory
      */
