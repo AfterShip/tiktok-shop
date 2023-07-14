@@ -137,8 +137,17 @@ class ProductSaveObserver implements ObserverInterface
             // Fix updated time for parent product.
             foreach ($parentIds as $parentId) {
                    $parentProduct = $this->productRepository->getById($parentId);
-                   $parentProduct->setData('updated_at', date('Y-m-d H:i:s'));
-                   $this->productRepository->save($parentProduct);
+                    $this->webhookHelper->makeWebhookRequest(
+                        $topic,
+                        [
+                            "id" => $parentProduct->getId(),
+                            "type_id" => $parentProduct->getTypeId(),
+                            "sku" => $parentProduct->getSku(),
+                            "visibility" => (string)$parentProduct->getVisibility(),
+                        ]
+                    );
+//                   $parentProduct->setData('updated_at', date('Y-m-d H:i:s'));
+//                   $this->productRepository->save($parentProduct);
             }
         } catch (\Exception $e) {
             $this->logger->error(
