@@ -1,4 +1,15 @@
 <?php
+/**
+ * TikTokShop SalesOrderUpdateObserver
+ * php version 7.1.0
+ *
+ * @category  AfterShip
+ * @package   TikTokShop
+ * @author    AfterShip <apps@aftership.com>
+ * @copyright 2023 AfterShip
+ * @license   MIT http://opensource.org/licenses/MIT
+ * @link      https://aftership.com
+ */
 
 namespace AfterShip\TikTokShop\Observer;
 
@@ -9,35 +20,65 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 
+/**
+ * SalesOrderUpdateObserver
+ *
+ * @category AfterShip
+ * @package  TikTokShop
+ * @author   AfterShip <apps@aftership.com>
+ * @license  MIT http://opensource.org/licenses/MIT
+ * @link     https://aftership.com
+ */
 class SalesOrderUpdateObserver implements ObserverInterface
 {
-	/** @var LoggerInterface */
-	protected $logger;
-	/** @var WebhookHelper */
-	protected $webhookHelper;
+    /**
+     * LoggerInterface
+     *
+     * @var LoggerInterface 
+     */
+    protected $logger;
+    /**
+     * WebhookHelper
+     *
+     * @var WebhookHelper 
+     */
+    protected $webhookHelper;
 
-	public function __construct(
-		LoggerInterface $logger,
-		WebhookHelper   $webhookHelper
-	)
-	{
-		$this->logger = $logger;
-		$this->webhookHelper = $webhookHelper;
-	}
+    /**
+     * Construct
+     *
+     * @param LoggerInterface $logger        'logger'
+     * @param WebhookHelper   $webhookHelper 'webhook helper'
+     */
+    public function __construct(
+        LoggerInterface $logger,
+        WebhookHelper   $webhookHelper
+    ) {
+        $this->logger = $logger;
+        $this->webhookHelper = $webhookHelper;
+    }
 
-	public function execute(Observer $observer)
-	{
-		try {
-			/** @var Order $order */
-			$order = $observer->getEvent()->getOrder();
-			$orderId = $order->getId();
-			$orderStatus = $order->getStatus();
-			$this->webhookHelper->makeWebhookRequest(Constants::WEBHOOK_TOPIC_ORDERS_UPDATE, [
-				'id' => $orderId,
-				'status' => $orderStatus,
-			]);
-		} catch (\Exception $e) {
-			$this->logger->error(sprintf('[AfterShip TikTokShop] Faield to send order webhook on OrderUpdateObserver, %s', $e->getMessage()));
-		}
-	}
+    /**
+     * Execute
+     *
+     * @param Observer $observer 'observer'
+     *
+     * @return void
+     */
+    public function execute(Observer $observer)
+    {
+        try {
+            $order = $observer->getEvent()->getOrder();
+            $orderId = $order->getId();
+            $orderStatus = $order->getStatus();
+            $this->webhookHelper->makeWebhookRequest(
+                Constants::WEBHOOK_TOPIC_ORDERS_UPDATE, [
+                'id' => $orderId,
+                'status' => $orderStatus,
+                ]
+            );
+        } catch (\Exception $e) {
+            $this->logger->error(sprintf('[AfterShip TikTokShop] Faield to send order webhook on OrderUpdateObserver, %s', $e->getMessage()));
+        }
+    }
 }

@@ -1,4 +1,15 @@
 <?php
+/**
+ * TikTokShop StoreConfigExtensionAttributes
+ * php version 7.1.0
+ *
+ * @category  AfterShip
+ * @package   TikTokShop
+ * @author    AfterShip <apps@aftership.com>
+ * @copyright 2023 AfterShip
+ * @license   MIT http://opensource.org/licenses/MIT
+ * @link      https://aftership.com
+ */
 
 namespace AfterShip\TikTokShop\Plugin;
 
@@ -9,31 +20,60 @@ use Magento\Store\Api\StoreConfigManagerInterface;
 use Magento\Store\Api\Data\StoreConfigExtensionFactory;
 use AfterShip\TikTokShop\Constants;
 
+/**
+ * StoreConfigExtensionAttributes
+ *
+ * @category AfterShip
+ * @package  TikTokShop
+ * @author   AfterShip <apps@aftership.com>
+ * @license  MIT http://opensource.org/licenses/MIT
+ * @link     https://aftership.com
+ */
 class StoreConfigExtensionAttributes
 {
-	/** @var UserContextInterface  */
-    private $userContext;
-	/** @var IntegrationServiceInterface  */
-    private $integrationService;
-	/** @var StoreConfigExtensionFactory  */
-    private $storeConfigExtensionFactory;
+    /**
+     * UserContextInterface
+     *
+     * @var UserContextInterface  
+     */
+    protected $userContext;
+    /**
+     * IntegrationServiceInterface
+     *
+     * @var IntegrationServiceInterface  
+     */
+    protected $integrationService;
+    /**
+     * StoreConfigExtensionFactory
+     *
+     * @var StoreConfigExtensionFactory  
+     */
+    protected $storeConfigExtensionFactory;
 
+    /**
+     * Construct
+     *
+     * @param StoreConfigExtensionFactory $storeConfigExtensionFactory '$storeConfigExtensionFactory'
+     * @param UserContextInterface        $userContext                 '$userContext'
+     * @param IntegrationServiceInterface $integrationService          '$integrationService'
+     */
     public function __construct(
         StoreConfigExtensionFactory $storeConfigExtensionFactory,
         UserContextInterface        $userContext,
         IntegrationServiceInterface $integrationService
-    )
-    {
+    ) {
 
         $this->storeConfigExtensionFactory = $storeConfigExtensionFactory;
         $this->userContext = $userContext;
         $this->integrationService = $integrationService;
     }
 
-	/**
-	 * @return string
-	 */
-    private function getApiScopes()
+    /**
+     * GetApiScopes
+     *
+     * @return string
+     */
+    public function getApiScopes()
     {
         $integrationId = $this->userContext->getUserId();
         $apiScopes = '';
@@ -44,22 +84,26 @@ class StoreConfigExtensionAttributes
         return $apiScopes;
     }
 
-	/**
-	 * @return string
-	 */
-	private function getVersion()
-	{
-		return Constants::AFTERSHIP_TIKTOK_SHOP_VERSION;
-	}
+    /**
+     * GetVersion
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return Constants::AFTERSHIP_TIKTOK_SHOP_VERSION;
+    }
 
-	/**
-	 * @param StoreConfigManagerInterface $subject
-	 * @param $result
-	 * @return mixed
-	 */
+    /**
+     * AfterGetStoreConfigs.
+     *
+     * @param StoreConfigManagerInterface $subject 'subject'
+     * @param $result  'result'
+     * 
+     * @return mixed
+     */
     public function afterGetStoreConfigs(StoreConfigManagerInterface $subject, $result)
     {
-        /** @var StoreConfigInterface $store */
         foreach ($result as $store) {
             $extensionAttributes = $store->getExtensionAttributes();
             if (!$extensionAttributes) {
@@ -69,9 +113,9 @@ class StoreConfigExtensionAttributes
             if (method_exists($extensionAttributes, 'setPermissions')) {
                 call_user_func_array(array($extensionAttributes, 'setPermissions'), array($this->getApiScopes()));
             }
-			if (method_exists($extensionAttributes, 'setAftershipTiktok')) {
-				call_user_func_array(array($extensionAttributes, 'setAftershipTiktok'), array($this->getVersion()));
-			}
+            if (method_exists($extensionAttributes, 'setAftershipTiktok')) {
+                call_user_func_array(array($extensionAttributes, 'setAftershipTiktok'), array($this->getVersion()));
+            }
             // Pass Upgrade compatibility tool check.
             if (method_exists($extensionAttributes, 'setData')) {
                 call_user_func_array(array($extensionAttributes, 'setData'), array('permissions', $this->getApiScopes()));
