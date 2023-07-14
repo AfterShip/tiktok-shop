@@ -22,7 +22,7 @@ class Constants
 {
     public const INTEGRATION_APPS = ['feed'];
 
-    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.7';
+    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.8';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
 
