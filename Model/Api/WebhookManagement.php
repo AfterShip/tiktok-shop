@@ -1,4 +1,12 @@
 <?php
+/**
+ * TikTokShop WebhookManagement
+ *
+ * @author    AfterShip <apps@aftership.com>
+ * @copyright 2023 AfterShip
+ * @license   MIT http://opensource.org/licenses/MIT
+ * @link      https://aftership.com
+ */
 
 namespace AfterShip\TikTokShop\Model\Api;
 
@@ -12,138 +20,190 @@ use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\Phrase;
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * Use to Manage Webhook.
+ *
+ * @author   AfterShip <apps@aftership.com>
+ * @license  MIT http://opensource.org/licenses/MIT
+ * @link     https://aftership.com
+ */
 class WebhookManagement implements WebhookManagementInterface
 {
 
-	private $integrationId;
-	/** @var ScopeConfigInterface */
-	private $scopeConfig;
-	/** @var WriterInterface */
-	private $configWriter;
-	/** @var TypeListInterface */
-	private $cacheTypeList;
+    /**
+     * The Integration Id.
+     *
+     * @var int|null
+     */
+    protected $integrationId;
+    /**
+     * ScopeConfig Instance.
+     *
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
+    /**
+     * ConfigWriter Instance.
+     *
+     * @var WriterInterface
+     */
+    protected $configWriter;
+    /**
+     * CacheTypeList Instance.
+     *
+     * @var TypeListInterface
+     */
+    protected $cacheTypeList;
 
-	/** @var array */
-	private $webhooks = [];
+    /**
+     * Array of Webhook.
+     *
+     * @var array
+     */
+    protected $webhooks = [];
 
-	public function __construct(
-		UserContextInterface $userContext,
-		ScopeConfigInterface $scopeConfig,
-		WriterInterface      $configWriter,
-		TypeListInterface $cacheTypeList
-	)
-	{
-		$this->integrationId = $userContext->getUserId();
-		$this->cacheTypeList = $cacheTypeList;
-		$this->scopeConfig = $scopeConfig;
-		$this->configWriter = $configWriter;
-		$webhooksJson = $this->scopeConfig->getValue(
-			Constants::WEBHOOK_CONFIG_SCOPE_PATH,
-			'default'
-		);
-		$this->webhooks = $webhooksJson ? json_decode($webhooksJson) : [];
-	}
+    /**
+     * Construct
+     *
+     * @param UserContextInterface $userContext
+     * @param ScopeConfigInterface $scopeConfig
+     * @param WriterInterface      $configWriter
+     * @param TypeListInterface    $cacheTypeList
+     */
+    public function __construct(
+        UserContextInterface $userContext,
+        ScopeConfigInterface $scopeConfig,
+        WriterInterface      $configWriter,
+        TypeListInterface $cacheTypeList
+    ) {
+        $this->integrationId = $userContext->getUserId();
+        $this->cacheTypeList = $cacheTypeList;
+        $this->scopeConfig = $scopeConfig;
+        $this->configWriter = $configWriter;
+        $webhooksJson = $this->scopeConfig->getValue(
+            Constants::WEBHOOK_CONFIG_SCOPE_PATH,
+            'default'
+        );
+        $this->webhooks = $webhooksJson ? json_decode($webhooksJson) : [];
+    }
 
-	/**
-	 * @param WebhookEntityInterface $request
-	 * @return mixed|null
-	 * @throws \Magento\Framework\Exception\LocalizedException
-	 */
-	public function registerWebhook($request = null)
-	{
-		if (!$request || !$request->getTopic() || !$request->getAddress() || !$request->getAppKey()) {
-			throw new LocalizedException(
-				new Phrase('The necessary parameters for creating a webhook are missing.'),
-				null,
-				400
-			);
-		}
-		$webhookId = $request->getId();
-		$request->setIntegrationId($this->integrationId);
-		$webhook = [
-			"id" => $webhookId,
-			"topic" => $request->getTopic(),
-			"app_key" => $request->getAppKey(),
-			"address" => $request->getAddress(),
-			"integration_id" => $this->integrationId,
-		];
-		$results = array_filter($this->webhooks, function ($item) use ($webhookId) {
-			return $item->id === $webhookId;
-		});
-		$done = !count($results) && array_push($this->webhooks, $webhook) && $this->configWriter->save(
-				Constants::WEBHOOK_CONFIG_SCOPE_PATH,
-				json_encode($this->webhooks),
-				'default'
-			);
-		$this->cacheTypeList->cleanType('config');
-		return $request;
-	}
+    /**
+     * RegisterWebhook
+     *
+     * @param WebhookEntityInterface $request
+     *
+     * @return mixed|null
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function registerWebhook($request = null)
+    {
+        if (!$request || !$request->getTopic() || !$request->getAddress() || !$request->getAppKey()) {
+            throw new LocalizedException(
+                new Phrase('The necessary parameters for creating a webhook are missing.'),
+                null,
+                400
+            );
+        }
+        $webhookId = $request->getId();
+        $request->setIntegrationId($this->integrationId);
+        $webhook = [
+        "id" => $webhookId,
+        "topic" => $request->getTopic(),
+        "app_key" => $request->getAppKey(),
+        "address" => $request->getAddress(),
+        "integration_id" => $this->integrationId,
+        ];
+        $results = array_filter(
+            $this->webhooks,
+            function ($item) use ($webhookId) {
+                return $item->id === $webhookId;
+            }
+        );
+        $done = !count($results) && array_push($this->webhooks, $webhook) && $this->configWriter->save(
+            Constants::WEBHOOK_CONFIG_SCOPE_PATH,
+            json_encode($this->webhooks),
+            'default'
+        );
+        $this->cacheTypeList->cleanType('config');
+        return $request;
+    }
 
-	/**
-	 * @return WebhookEntityInterface[]|array
-	 */
-	public function listWebhooks()
-	{
-		$webhooks = [];
-		foreach ($this->webhooks as $webhook) {
-			$entity = new WebhookRequest();
-			$entity->setId($webhook->id);
-			$entity->setTopic($webhook->topic);
-			$entity->setAddress($webhook->address);
-			$entity->setAppKey($webhook->app_key);
-			$entity->setIntegrationId($webhook->integration_id);
-			array_push($webhooks, $entity);
-		}
-		return $webhooks;
-	}
+    /**
+     * ListWebhooks.
+     *
+     * @return WebhookEntityInterface[]|array
+     */
+    public function listWebhooks()
+    {
+        $webhooks = [];
+        foreach ($this->webhooks as $webhook) {
+            $entity = new WebhookRequest();
+            $entity->setId($webhook->id);
+            $entity->setTopic($webhook->topic);
+            $entity->setAddress($webhook->address);
+            $entity->setAppKey($webhook->app_key);
+            $entity->setIntegrationId($webhook->integration_id);
+            array_push($webhooks, $entity);
+        }
+        return $webhooks;
+    }
 
-	/**
-	 * @param $webhookId
-	 * @return WebhookRequest|null
-	 */
-	public function getWebhook($webhookId)
-	{
-		$entity = null;
-		foreach ($this->webhooks as $webhook) {
-			if ($webhook->id === $webhookId) {
-				$entity = new WebhookRequest();
-				$entity->setId($webhook->id);
-				$entity->setTopic($webhook->topic);
-				$entity->setAddress($webhook->address);
-				$entity->setAppKey($webhook->app_key);
-				$entity->setIntegrationId($webhook->integration_id);
-			}
-		}
-		return $entity;
-	}
+    /**
+     * GetWebhook.
+     *
+     * @param string $webhookId
+     *
+     * @return WebhookRequest|null
+     */
+    public function getWebhook($webhookId)
+    {
+        $entity = null;
+        foreach ($this->webhooks as $webhook) {
+            if ($webhook->id === $webhookId) {
+                $entity = new WebhookRequest();
+                $entity->setId($webhook->id);
+                $entity->setTopic($webhook->topic);
+                $entity->setAddress($webhook->address);
+                $entity->setAppKey($webhook->app_key);
+                $entity->setIntegrationId($webhook->integration_id);
+            }
+        }
+        return $entity;
+    }
 
-	/**
-	 * @param $webhookId
-	 * @return WebhookRequest|null
-	 */
-	public function deleteWebhook($webhookId)
-	{
-		$entity = null;
-		$filteredWebhooks = [];
-		foreach ($this->webhooks as $webhook) {
-			if ($webhook->id === $webhookId) {
-				$entity = new WebhookRequest();
-				$entity->setId($webhook->id);
-				$entity->setTopic($webhook->topic);
-				$entity->setAddress($webhook->address);
-				$entity->setAppKey($webhook->app_key);
-				$entity->setIntegrationId($webhook->integration_id);
-			}else {
-				array_push($filteredWebhooks, $webhook);
-			}
-		}
-		$this->webhooks = $filteredWebhooks;
-		$this->configWriter->save(
-			Constants::WEBHOOK_CONFIG_SCOPE_PATH,
-			json_encode($filteredWebhooks),
-			'default'
-		);
-		$this->cacheTypeList->cleanType('config');
-		return $entity;
-	}
+    /**
+     * DeleteWebhook
+     *
+     * @param string $webhookId
+     *
+     * @return WebhookRequest|null
+     */
+    public function deleteWebhook($webhookId)
+    {
+        $entity = null;
+        $filteredWebhooks = [];
+        foreach ($this->webhooks as $webhook) {
+            if ($webhook->id === $webhookId) {
+
+                $entity = new WebhookRequest();
+                $entity->setId($webhook->id);
+                $entity->setTopic($webhook->topic);
+                $entity->setAddress($webhook->address);
+                $entity->setAppKey($webhook->app_key);
+                $entity->setIntegrationId($webhook->integration_id);
+            } else {
+                
+                array_push($filteredWebhooks, $webhook);
+            }
+        }
+        $this->webhooks = $filteredWebhooks;
+        $this->configWriter->save(
+            Constants::WEBHOOK_CONFIG_SCOPE_PATH,
+            json_encode($filteredWebhooks),
+            'default'
+        );
+        $this->cacheTypeList->cleanType('config');
+        return $entity;
+    }
 }
