@@ -80,6 +80,7 @@ class InventoryUpdateObserver implements ObserverInterface
 						"id" => $parentId,
 						"type_id" => $parentProduct->getTypeId(),
 						"sku" => $parentProduct->getSku(),
+						"visibility" => (string)$parentProduct->getVisibility(),
 					]);
 				}
 			}
