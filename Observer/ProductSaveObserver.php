@@ -138,7 +138,7 @@ class ProductSaveObserver implements ObserverInterface
             foreach ($parentIds as $parentId) {
                    $parentProduct = $this->productRepository->getById($parentId);
                     $this->webhookHelper->makeWebhookRequest(
-                        $topic,
+                        Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE,
                         [
                             "id" => $parentProduct->getId(),
                             "type_id" => $parentProduct->getTypeId(),
@@ -146,8 +146,6 @@ class ProductSaveObserver implements ObserverInterface
                             "visibility" => (string)$parentProduct->getVisibility(),
                         ]
                     );
-//                   $parentProduct->setData('updated_at', date('Y-m-d H:i:s'));
-//                   $this->productRepository->save($parentProduct);
             }
         } catch (\Exception $e) {
             $this->logger->error(
