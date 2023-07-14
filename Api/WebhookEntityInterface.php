@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop WebhookEntityInterface
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -12,11 +9,10 @@
  */
 
 namespace AfterShip\TikTokShop\Api;
+
 /**
- * WebhookEntityInterface
+ * Interface for WebhookEntity.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -37,7 +33,7 @@ interface WebhookEntityInterface
     public function getId();
     /**
      * GetTopic
-     * 
+     *
      * @return string
      */
     public function getTopic();
@@ -64,15 +60,15 @@ interface WebhookEntityInterface
     /**
      * SetId
      *
-     * @param string $id 'id'
-     * 
+     * @param string $id
+     *
      * @return string
      */
     public function setId($id);
     /**
      * SetTopic
      *
-     * @param string $topic 'topic'
+     * @param string $topic
      *
      * @return $this
      */
@@ -80,7 +76,7 @@ interface WebhookEntityInterface
     /**
      * SetAppKey
      *
-     * @param string $app_key 'app_key'
+     * @param string $app_key
      *
      * @return $this
      */
@@ -88,7 +84,7 @@ interface WebhookEntityInterface
     /**
      * SetAddress
      *
-     * @param string $address 'address'
+     * @param string $address
      *
      * @return $this
      */
@@ -96,7 +92,7 @@ interface WebhookEntityInterface
     /**
      * SetIntegrationId
      *
-     * @param string $integrationId 'integration_id'
+     * @param string $integrationId
      *
      * @return $this
      */

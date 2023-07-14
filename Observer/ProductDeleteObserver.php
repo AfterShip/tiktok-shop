@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop ProductDeleteObserver
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -21,10 +18,8 @@ use AfterShip\TikTokShop\Helper\WebhookHelper;
 use Psr\Log\LoggerInterface;
 
 /**
- * ProductDeleteObserver
+ * Send webhook when get product delete event.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -34,28 +29,28 @@ class ProductDeleteObserver implements ObserverInterface
     /**
      * ProductRepositoryInterface
      *
-     * @var ProductRepositoryInterface 
+     * @var ProductRepositoryInterface
      */
     protected $productRepository;
     /**
      * WebhookHelper
      *
-     * @var WebhookHelper 
+     * @var WebhookHelper
      */
     protected $webhookHelper;
     /**
      * LoggerInterface
      *
-     * @var LoggerInterface 
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
      * Construct
      *
-     * @param ProductRepositoryInterface $productRepository '$productRepository'
-     * @param WebhookHelper              $webhookHelper     '$webhookHelper'
-     * @param LoggerInterface            $logger            '$logger'
+     * @param ProductRepositoryInterface $productRepository
+     * @param WebhookHelper              $webhookHelper
+     * @param LoggerInterface            $logger
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -71,8 +66,8 @@ class ProductDeleteObserver implements ObserverInterface
     /**
      * Execute
      *
-     * @param Observer $observer 'observer'
-     * 
+     * @param Observer $observer
+     *
      * @return void
      */
     public function execute(Observer $observer)
@@ -83,7 +78,8 @@ class ProductDeleteObserver implements ObserverInterface
             $productId = $product->getId();
             // Send webhook.
             $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_PRODUCTS_DELETE, [
+                Constants::WEBHOOK_TOPIC_PRODUCTS_DELETE,
+                [
                 "id" => $productId,
                 "type_id" => $product->getTypeId(),
                 "sku" => $product->getSku(),

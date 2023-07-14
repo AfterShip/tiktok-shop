@@ -1,10 +1,8 @@
 <?php
 /**
  * TikTokShop Constants
- * php version 7.1.0
+
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -16,13 +14,11 @@ namespace AfterShip\TikTokShop;
 /**
  * Constants
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
-final class Constants
+class Constants
 {
     const INTEGRATION_APPS = ['feed'];
 
@@ -35,5 +31,4 @@ final class Constants
     const WEBHOOK_TOPIC_VARIANTS_UPDATE = 'variants/update';
     const WEBHOOK_TOPIC_PRODUCTS_DELETE = 'products/delete';
     const WEBHOOK_TOPIC_VARIANTS_DELETE = 'variants/delete';
-
 }

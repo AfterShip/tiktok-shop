@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop WebhookRequest
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -17,10 +14,8 @@ use Magento\Framework\DataObject;
 use AfterShip\TikTokShop\Api\WebhookEntityInterface;
 
 /**
- * WebhookRequest
+ * WebhookRequest model for webhook.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -78,7 +73,7 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
     /**
      * SetId.
      *
-     * @param $id 'id'
+     * @param string $id
      *
      * @return WebhookRequest|string
      */
@@ -90,7 +85,7 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
     /**
      * SetTopic
      *
-     * @param $topic 'topic'
+     * @param string $topic
      *
      * @return WebhookRequest
      */
@@ -102,7 +97,7 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
     /**
      * SetAppKey
      *
-     * @param $app_key 'app_key'
+     * @param string  $app_key
      *
      * @return WebhookRequest
      */
@@ -114,7 +109,7 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
     /**
      * SetAddress
      *
-     * @param $address 'address'
+     * @param string $address
      *
      * @return WebhookRequest
      */
@@ -126,7 +121,7 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
     /**
      * SetIntegrationId
      *
-     * @param $integration_id 'integration_id'
+     * @param string $integration_id
      *
      * @return WebhookRequest
      */

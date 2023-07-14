@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop WebhookHelper
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -21,10 +18,8 @@ use Magento\Integration\Api\OauthServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * WebhookHelper
+ * Main helper function.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -36,41 +31,41 @@ class WebhookHelper
     /**
      * Webhoks
      *
-     * @var array|mixed  
+     * @var array|mixed
      */
     protected $webhooks = [];
     /**
      * ScopeConfig
      *
-     * @var ScopeConfigInterface 
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
     /**
      * OauthService
      *
-     * @var OauthServiceInterface 
+     * @var OauthServiceInterface
      */
     protected $oauthService;
     /**
      * IntegrationService
      *
-     * @var IntegrationServiceInterface 
+     * @var IntegrationServiceInterface
      */
     protected $integrationService;
     /**
      * Logger
      *
-     * @var LoggerInterface 
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
      * Construct
      *
-     * @param ScopeConfigInterface        $scopeConfig        'ScopeConfig'
-     * @param IntegrationServiceInterface $integrationService 'IntegrationService'
-     * @param OauthServiceInterface       $oauthService       'OauthService'
-     * @param LoggerInterface             $logger             'Logger'
+     * @param ScopeConfigInterface        $scopeConfig
+     * @param IntegrationServiceInterface $integrationService
+     * @param OauthServiceInterface       $oauthService
+     * @param LoggerInterface             $logger
      */
     public function __construct(
         ScopeConfigInterface        $scopeConfig,
@@ -92,9 +87,9 @@ class WebhookHelper
     /**
      * MakeWebhookRequest
      *
-     * @param string $topic 'topoc'
-     * @param array  $data  'data'
-     * 
+     * @param string $topic
+     * @param array  $data
+     *
      * @return void
      */
     public function makeWebhookRequest($topic, $data)
@@ -110,8 +105,8 @@ class WebhookHelper
     /**
      * SendWebhook
      *
-     * @param $webhook 'webhook'
-     * @param $data    'data'
+     * @param string $webhook
+     * @param array $data
      *
      * @return bool|string
      */
@@ -119,18 +114,19 @@ class WebhookHelper
     {
         $curl = curl_init();
         curl_setopt_array(
-            $curl, [
+            $curl,
+            [
             CURLOPT_URL => $webhook->address,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => array(
+            CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
             'X-Magento-Hmac-Sha256: ' . $this->createWebhookSecurity($webhook->integration_id, $data),
             'Content-Length: ' . strlen(json_encode($data)),
             'X-Webhook-Topic: ' . $webhook->topic,
             'X-App-Key: ' . $webhook->app_key
-            ),
+            ],
             ]
         );
         $response = curl_exec($curl);
@@ -145,9 +141,9 @@ class WebhookHelper
     /**
      * CreateWebhookSecurity
      *
-     * @param string $integrationId 'integrationId'
-     * @param array  $data          'data'
-     * 
+     * @param string $integrationId
+     * @param array  $data
+     *
      * @return string
      */
     public function createWebhookSecurity($integrationId, $data)

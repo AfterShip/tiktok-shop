@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop ProductSaveObserver
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -24,10 +21,8 @@ use AfterShip\TikTokShop\Helper\WebhookHelper;
 use Psr\Log\LoggerInterface;
 
 /**
- * ProductSaveObserver
+ * Send webhook when get product update event.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -37,49 +32,49 @@ class ProductSaveObserver implements ObserverInterface
     /**
      * ProductRepositoryInterface
      *
-     * @var ProductRepositoryInterface 
+     * @var ProductRepositoryInterface
      */
     protected $productRepository;
     /**
      * Configurable
      *
-     * @var Configurable 
+     * @var Configurable
      */
     protected $configurable;
     /**
      * Grouped
      *
-     * @var Grouped 
+     * @var Grouped
      */
     protected $grouped;
     /**
      * Bundle
      *
-     * @var Bundle 
+     * @var Bundle
      */
     protected $bundle;
     /**
      * WebhookHelper
      *
-     * @var WebhookHelper 
+     * @var WebhookHelper
      */
     protected $webhookHelper;
     /**
      * LoggerInterface
      *
-     * @var LoggerInterface 
+     * @var LoggerInterface
      */
     protected $logger;
 
     /**
      * Construct
      *
-     * @param ProductRepositoryInterface $productRepository '$productRepository'
-     * @param Configurable               $configurable      '$configurable'
-     * @param Grouped                    $grouped           '$grouped'
-     * @param Bundle                     $bundle            '$bundle'
-     * @param WebhookHelper              $webhookHelper     '$webhookHelper'
-     * @param LoggerInterface            $logger            '$logger'
+     * @param ProductRepositoryInterface $productRepository
+     * @param Configurable               $configurable
+     * @param Grouped                    $grouped
+     * @param Bundle                     $bundle
+     * @param WebhookHelper              $webhookHelper
+     * @param LoggerInterface            $logger
      */
     public function __construct(
         ProductRepositoryInterface $productRepository,
@@ -115,7 +110,7 @@ class ProductSaveObserver implements ObserverInterface
     /**
      * Execute
      *
-     * @param Observer $observer 'observer'
+     * @param Observer $observer
      *
      * @return void
      */
@@ -129,7 +124,8 @@ class ProductSaveObserver implements ObserverInterface
             $topic = (count($parentIds) === 0) ? Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE : Constants::WEBHOOK_TOPIC_VARIANTS_UPDATE;
             // Send webhook.
             $this->webhookHelper->makeWebhookRequest(
-                $topic, [
+                $topic,
+                [
                 "id" => $productId,
                 "type_id" => $product->getTypeId(),
                 "sku" => $product->getSku(),

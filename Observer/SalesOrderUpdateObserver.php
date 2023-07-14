@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop SalesOrderUpdateObserver
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -21,10 +18,8 @@ use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 
 /**
- * SalesOrderUpdateObserver
+ * Send webhook when get order update event.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -34,21 +29,21 @@ class SalesOrderUpdateObserver implements ObserverInterface
     /**
      * LoggerInterface
      *
-     * @var LoggerInterface 
+     * @var LoggerInterface
      */
     protected $logger;
     /**
      * WebhookHelper
      *
-     * @var WebhookHelper 
+     * @var WebhookHelper
      */
     protected $webhookHelper;
 
     /**
      * Construct
      *
-     * @param LoggerInterface $logger        'logger'
-     * @param WebhookHelper   $webhookHelper 'webhook helper'
+     * @param LoggerInterface $logger
+     * @param WebhookHelper   $webhookHelper
      */
     public function __construct(
         LoggerInterface $logger,
@@ -61,7 +56,7 @@ class SalesOrderUpdateObserver implements ObserverInterface
     /**
      * Execute
      *
-     * @param Observer $observer 'observer'
+     * @param Observer $observer
      *
      * @return void
      */
@@ -72,7 +67,8 @@ class SalesOrderUpdateObserver implements ObserverInterface
             $orderId = $order->getId();
             $orderStatus = $order->getStatus();
             $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_ORDERS_UPDATE, [
+                Constants::WEBHOOK_TOPIC_ORDERS_UPDATE,
+                [
                 'id' => $orderId,
                 'status' => $orderStatus,
                 ]

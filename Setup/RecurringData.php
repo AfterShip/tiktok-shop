@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop RecurringData
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -23,10 +20,8 @@ use Magento\Integration\Model\Integration;
 use Magento\Store\Api\StoreRepositoryInterface;
 
 /**
- * RecurringData
+ * Create TikTok integration when update plugin.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -42,7 +37,7 @@ class RecurringData implements InstallDataInterface
     protected $storeRepository;
 
     /**
-     * Integration service
+     * IntegrationServiceInterface
      *
      * @var IntegrationServiceInterface
      */
@@ -58,9 +53,9 @@ class RecurringData implements InstallDataInterface
     /**
      * Construct
      *
-     * @param StoreRepositoryInterface      $storeRepository      '$storeRepository'
-     * @param IntegrationServiceInterface   $integrationService   '$integrationService'
-     * @param AuthorizationServiceInterface $authorizationService '$authorizationService'
+     * @param StoreRepositoryInterface      $storeRepository
+     * @param IntegrationServiceInterface   $integrationService
+     * @param AuthorizationServiceInterface $authorizationService
      */
     public function __construct(
         StoreRepositoryInterface      $storeRepository,
@@ -75,8 +70,8 @@ class RecurringData implements InstallDataInterface
     /**
      * Isnstall
      *
-     * @param ModuleDataSetupInterface $setup   '$setup'
-     * @param ModuleContextInterface   $context '$context'
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface   $context
      *
      * @return void
      *
@@ -100,9 +95,9 @@ class RecurringData implements InstallDataInterface
     /**
      * BuildIntegrationData
      *
-     * @param $app       'app'
-     * @param $storeId   'store_id'
-     * @param $storeCode 'storeCode'
+     * @param string $app
+     * @param string $storeId
+     * @param string $storeCode
      *
      * @return array
      */
@@ -123,7 +118,7 @@ class RecurringData implements InstallDataInterface
     /**
      * CreateIntegration
      *
-     * @param $integrationData 'integrationData'
+     * @param array $integrationData
      *
      * @return Integration
      *

@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop WebhookManagement
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -22,11 +19,10 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\Phrase;
 use Magento\Framework\Exception\LocalizedException;
+
 /**
- * WebhookManagement
+ * Use to Manage Webhook.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -37,42 +33,42 @@ class WebhookManagement implements WebhookManagementInterface
     /**
      * IntegrationId.
      *
-     * @var int|null  
+     * @var int|null
      */
     protected $integrationId;
     /**
      * ScopeConfig.
      *
-     * @var ScopeConfigInterface 
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
     /**
      * ConfigWriter.
      *
-     * @var WriterInterface 
+     * @var WriterInterface
      */
     protected $configWriter;
     /**
      * CacheTypeList.
      *
-     * @var TypeListInterface 
+     * @var TypeListInterface
      */
     protected $cacheTypeList;
 
     /**
      * Webhooks.
      *
-     * @var array 
+     * @var array
      */
     protected $webhooks = [];
 
     /**
      * Construct
      *
-     * @param UserContextInterface $userContext   'userContext'
-     * @param ScopeConfigInterface $scopeConfig   'scopeConfig'
-     * @param WriterInterface      $configWriter  'configWriter'
-     * @param TypeListInterface    $cacheTypeList 'cacheTypeList'
+     * @param UserContextInterface $userContext
+     * @param ScopeConfigInterface $scopeConfig
+     * @param WriterInterface      $configWriter
+     * @param TypeListInterface    $cacheTypeList
      */
     public function __construct(
         UserContextInterface $userContext,
@@ -94,8 +90,8 @@ class WebhookManagement implements WebhookManagementInterface
     /**
      * RegisterWebhook
      *
-     * @param WebhookEntityInterface $request 'request'
-     * 
+     * @param WebhookEntityInterface $request
+     *
      * @return mixed|null
      *
      * @throws \Magento\Framework\Exception\LocalizedException
@@ -119,7 +115,8 @@ class WebhookManagement implements WebhookManagementInterface
         "integration_id" => $this->integrationId,
         ];
         $results = array_filter(
-            $this->webhooks, function ($item) use ($webhookId) {
+            $this->webhooks,
+            function ($item) use ($webhookId) {
                 return $item->id === $webhookId;
             }
         );
@@ -155,8 +152,8 @@ class WebhookManagement implements WebhookManagementInterface
     /**
      * GetWebhook.
      *
-     * @param $webhookId 'webhookId'
-     * 
+     * @param string $webhookId
+     *
      * @return WebhookRequest|null
      */
     public function getWebhook($webhookId)
@@ -178,7 +175,7 @@ class WebhookManagement implements WebhookManagementInterface
     /**
      * DeleteWebhook
      *
-     * @param $webhookId 'webhookId'
+     * @param string $webhookId
      *
      * @return WebhookRequest|null
      */

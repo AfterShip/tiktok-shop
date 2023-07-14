@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop WebhookManagementInterface
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -12,13 +9,12 @@
  */
 
 namespace AfterShip\TikTokShop\Api;
+
 use AfterShip\TikTokShop\Api\WebhookEntityInterface;
 
 /**
- * WebhookManagementInterface
+ * Interface for WebhookManagement.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -28,7 +24,7 @@ interface WebhookManagementInterface
     /**
      * Register webhook.
      *
-     * @param WebhookEntityInterface $webhook 'webhook'
+     * @param WebhookEntityInterface $webhook
      *
      * @return WebhookEntityInterface
      *
@@ -44,7 +40,7 @@ interface WebhookManagementInterface
     /**
      * Delete webhook by id.
      *
-     * @param string $webhookId 'webhook_id'
+     * @param string $webhookId
      *
      * @return WebhookEntityInterface|null
      */
@@ -52,7 +48,7 @@ interface WebhookManagementInterface
     /**
      * Get webhook by id.
      *
-     * @param string $webhookId 'webhook_id'
+     * @param string $webhookId
      *
      * @return WebhookEntityInterface|null
      */

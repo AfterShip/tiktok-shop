@@ -1,10 +1,7 @@
 <?php
 /**
  * TikTokShop InventoryUpdateObserver
- * php version 7.1.0
  *
- * @category  AfterShip
- * @package   TikTokShop
  * @author    AfterShip <apps@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
@@ -26,10 +23,8 @@ use Magento\Integration\Api\IntegrationServiceInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * InventoryUpdateObserver
+ * Send webhook when get inventory update event.
  *
- * @category AfterShip
- * @package  TikTokShop
  * @author   AfterShip <apps@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
@@ -52,14 +47,14 @@ class InventoryUpdateObserver implements ObserverInterface
     /**
      * Construct
      *
-     * @param ProductRepositoryInterface  $productRepository  'productRepository'
-     * @param UserContextInterface        $userContext        'userContext'
-     * @param IntegrationServiceInterface $integrationService 'integrationService'
-     * @param LoggerInterface             $logger             'logger'
-     * @param WebhookHelper               $webhookHelper      'webhookHelper'
-     * @param Configurable                $configurable       'configurable'
-     * @param Grouped                     $grouped            'grouped'
-     * @param Bundle                      $bundle             'bundle'
+     * @param ProductRepositoryInterface  $productRepository
+     * @param UserContextInterface        $userContext
+     * @param IntegrationServiceInterface $integrationService
+     * @param LoggerInterface             $logger
+     * @param WebhookHelper               $webhookHelper
+     * @param Configurable                $configurable
+     * @param Grouped                     $grouped
+     * @param Bundle                      $bundle
      */
     public function __construct(
         ProductRepositoryInterface  $productRepository,
@@ -84,7 +79,7 @@ class InventoryUpdateObserver implements ObserverInterface
     /**
      * GetParentProductIds.
      *
-     * @param string $productId 'productId'
+     * @param string $productId
      *
      * @return array
      */
@@ -110,8 +105,8 @@ class InventoryUpdateObserver implements ObserverInterface
     /**
      * Execute
      *
-     * @param Observer $observer 'observer'
-     * 
+     * @param Observer $observer
+     *
      * @return void
      */
     public function execute(Observer $observer)
@@ -124,7 +119,8 @@ class InventoryUpdateObserver implements ObserverInterface
                 foreach ($parentIds as $parentId) {
                     $parentProduct = $this->productRepository->getById($parentId);
                     $this->webhookHelper->makeWebhookRequest(
-                        Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE, [
+                        Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE,
+                        [
                         "id" => $parentId,
                         "type_id" => $parentProduct->getTypeId(),
                         "sku" => $parentProduct->getSku(),
