@@ -13,12 +13,9 @@ namespace AfterShip\TikTokShop\Observer;
 use AfterShip\TikTokShop\Constants;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
-use Magento\GroupedProduct\Model\Product\Type\Grouped;
-use Magento\Bundle\Model\Product\Type as Bundle;
-use AfterShip\TikTokShop\Helper\WebhookHelper;
+use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
+use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 
 /**
  * Send webhook when get product update event.
@@ -30,81 +27,30 @@ use Psr\Log\LoggerInterface;
 class ProductSaveObserver implements ObserverInterface
 {
     /**
-     * ProductRepositoryInterface Instance.
-     *
-     * @var ProductRepositoryInterface
-     */
-    protected $productRepository;
-    /**
-     * Configurable Instance.
-     *
-     * @var Configurable
-     */
-    protected $configurable;
-    /**
-     * Grouped Instance.
-     *
-     * @var Grouped
-     */
-    protected $grouped;
-    /**
-     * Bundle Instance.
-     *
-     * @var Bundle
-     */
-    protected $bundle;
-    /**
-     * WebhookHelper Instance.
-     *
-     * @var WebhookHelper
-     */
-    protected $webhookHelper;
-    /**
      * LoggerInterface Instance.
      *
      * @var LoggerInterface
      */
     protected $logger;
+    /**
+     * Publisher Instance.
+     *
+     * @var WebhookPublisher
+     */
+    protected $publisher;
 
     /**
      * Construct
      *
-     * @param ProductRepositoryInterface $productRepository
-     * @param Configurable               $configurable
-     * @param Grouped                    $grouped
-     * @param Bundle                     $bundle
-     * @param WebhookHelper              $webhookHelper
-     * @param LoggerInterface            $logger
+     * @param LoggerInterface $logger
+     * @param WebhookPublisher $publisher
      */
     public function __construct(
-        ProductRepositoryInterface $productRepository,
-        Configurable               $configurable,
-        Grouped                    $grouped,
-        Bundle                     $bundle,
-        WebhookHelper              $webhookHelper,
-        LoggerInterface            $logger
+        LoggerInterface $logger,
+        WebhookPublisher $publisher
     ) {
-        $this->productRepository = $productRepository;
-        $this->configurable = $configurable;
-        $this->grouped = $grouped;
-        $this->bundle = $bundle;
         $this->logger = $logger;
-        $this->webhookHelper = $webhookHelper;
-    }
-
-    /**
-     * GetParentProductIds
-     *
-     * @param string $productId 'productId'
-     *
-     * @return array
-     */
-    public function getParentProductIds($productId)
-    {
-        $configurableParentIds = $this->configurable->getParentIdsByChild($productId);
-        $groupedParentIds = $this->grouped->getParentIdsByChild($productId);
-        $bundleParentIds = $this->bundle->getParentIdsByChild($productId);
-        return array_merge($configurableParentIds, $groupedParentIds, $bundleParentIds);
+        $this->publisher = $publisher;
     }
 
     /**
@@ -120,33 +66,11 @@ class ProductSaveObserver implements ObserverInterface
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
-            $parentIds = $this->getParentProductIds($productId);
-            $topic = (count($parentIds) === 0) ?
-                Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE :
-                Constants::WEBHOOK_TOPIC_VARIANTS_UPDATE;
-            // Send webhook.
-            $this->webhookHelper->makeWebhookRequest(
-                $topic,
-                [
-                "id" => $productId,
-                "type_id" => $product->getTypeId(),
-                "sku" => $product->getSku(),
-                "visibility" => (string)$product->getVisibility(),
-                ]
-            );
-            // Fix updated time for parent product.
-            foreach ($parentIds as $parentId) {
-                   $parentProduct = $this->productRepository->getById($parentId);
-                    $this->webhookHelper->makeWebhookRequest(
-                        Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE,
-                        [
-                            "id" => $parentProduct->getId(),
-                            "type_id" => $parentProduct->getTypeId(),
-                            "sku" => $parentProduct->getSku(),
-                            "visibility" => (string)$parentProduct->getVisibility(),
-                        ]
-                    );
-            }
+            $event = new WebhookEvent();
+            $event->setId($productId)
+                ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)
+                ->setEVent(Constants::WEBHOOK_EVENT_UPDATE);
+            $this->publisher->execute($event);
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(

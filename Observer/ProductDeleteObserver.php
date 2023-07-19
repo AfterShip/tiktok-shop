@@ -11,10 +11,10 @@
 namespace AfterShip\TikTokShop\Observer;
 
 use AfterShip\TikTokShop\Constants;
+use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use AfterShip\TikTokShop\Helper\WebhookHelper;
+use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -27,39 +27,30 @@ use Psr\Log\LoggerInterface;
 class ProductDeleteObserver implements ObserverInterface
 {
     /**
-     * ProductRepositoryInterface Instance.
-     *
-     * @var ProductRepositoryInterface
-     */
-    protected $productRepository;
-    /**
-     * WebhookHelper Instance.
-     *
-     * @var WebhookHelper
-     */
-    protected $webhookHelper;
-    /**
      * LoggerInterface Instance.
      *
      * @var LoggerInterface
      */
     protected $logger;
+    /**
+     * Publisher Instance.
+     *
+     * @var WebhookPublisher
+     */
+    protected $publisher;
 
     /**
      * Construct
      *
-     * @param ProductRepositoryInterface $productRepository
-     * @param WebhookHelper              $webhookHelper
-     * @param LoggerInterface            $logger
+     * @param LoggerInterface $logger
+     * @param WebhookPublisher $publisher
      */
     public function __construct(
-        ProductRepositoryInterface $productRepository,
-        WebhookHelper              $webhookHelper,
-        LoggerInterface            $logger
+        LoggerInterface $logger,
+        WebhookPublisher $publisher
     ) {
-        $this->productRepository = $productRepository;
         $this->logger = $logger;
-        $this->webhookHelper = $webhookHelper;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -75,20 +66,15 @@ class ProductDeleteObserver implements ObserverInterface
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
-            // Send webhook.
-            $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_PRODUCTS_DELETE,
-                [
-                "id" => $productId,
-                "type_id" => $product->getTypeId(),
-                "sku" => $product->getSku(),
-                "visibility" => (string)$product->getVisibility(),
-                ]
-            );
+            $event = new WebhookEvent();
+            $event->setId($productId)
+                ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)
+                ->setEVent(Constants::WEBHOOK_EVENT_DELETE);
+            $this->publisher->execute($event);
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
-                    '[AfterShip TikTokShop] Faield to send webhook on ProductDeleteObserver, %s',
+                    '[AfterShip TikTokShop] Failed to send webhook on ProductDeleteObserver, %s',
                     $e->getMessage()
                 )
             );
