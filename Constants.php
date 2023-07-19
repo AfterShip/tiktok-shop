@@ -22,11 +22,19 @@ class Constants
 {
     public const INTEGRATION_APPS = ['feed'];
 
+    public const WEBHOOK_MESSAGE_QUEUE_TOPIC = 'aftership.webhook.events';
+    public const WEBHOOK_EVENT_UPDATE = 'update';
+    public const WEBHOOK_EVENT_DELETE = 'delete';
+
+    public const WEBHOOK_RESOURCE_ORDERS = 'orders';
+    public const WEBHOOK_RESOURCE_PRODUCTS = 'products';
+    
     public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.8';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
 
     public const WEBHOOK_TOPIC_ORDERS_UPDATE = 'orders/update';
+    public const WEBHOOK_TOPIC_ORDERS_DELETE = 'orders/delete';
     public const WEBHOOK_TOPIC_PRODUCTS_UPDATE = 'products/update';
     public const WEBHOOK_TOPIC_VARIANTS_UPDATE = 'variants/update';
     public const WEBHOOK_TOPIC_PRODUCTS_DELETE = 'products/delete';

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Communication/etc/communication.xsd">
+    <topic name="aftership.webhook.events" is_synchronous="false" request="AfterShip\TikTokShop\Api\Data\WebhookEventInterface">
+        <handler name="aftership.webhook.events" type="AfterShip\TikTokShop\Model\Queue\WebhookConsumer" method="execute" />
+    </topic>
+</config>

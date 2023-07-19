@@ -10,17 +10,13 @@
 
 namespace AfterShip\TikTokShop\Observer;
 
+use Psr\Log\LoggerInterface;
 use AfterShip\TikTokShop\Constants;
-use AfterShip\TikTokShop\Helper\WebhookHelper;
-use Magento\Authorization\Model\UserContextInterface;
-use Magento\GroupedProduct\Model\Product\Type\Grouped;
-use Magento\Bundle\Model\Product\Type as Bundle;
-use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Integration\Api\IntegrationServiceInterface;
-use Psr\Log\LoggerInterface;
+use Magento\Authorization\Model\UserContextInterface;
+use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 
 /**
  * Send webhook when get inventory update event.
@@ -32,63 +28,39 @@ use Psr\Log\LoggerInterface;
 class InventoryUpdateObserver implements ObserverInterface
 {
     /**
-     * ProductRepositoryInterface Instance.
+     * UserContext Instance.
      *
-     * @var ProductRepositoryInterface
+     * @var UserContextInterface
      */
-    protected $productRepository;
+    protected $userContext;
     /**
-     * Configurable Instance.
+     * Logger Instance.
      *
-     * @var Configurable
+     * @var LoggerInterface
      */
-    protected $configurable;
+    protected $logger;
+    /**
+     * Publisher Instance.
+     *
+     * @var WebhookPublisher
+     */
+    protected $publisher;
 
     /**
      * Construct
      *
-     * @param ProductRepositoryInterface  $productRepository
-     * @param UserContextInterface        $userContext
-     * @param IntegrationServiceInterface $integrationService
-     * @param LoggerInterface             $logger
-     * @param WebhookHelper               $webhookHelper
-     * @param Configurable                $configurable
-     * @param Grouped                     $grouped
-     * @param Bundle                      $bundle
+     * @param UserContextInterface $userContext
+     * @param LoggerInterface $logger
+     * @param WebhookPublisher $publisher
      */
     public function __construct(
-        ProductRepositoryInterface  $productRepository,
         UserContextInterface        $userContext,
-        IntegrationServiceInterface $integrationService,
-        LoggerInterface             $logger,
-        WebhookHelper               $webhookHelper,
-        Configurable                $configurable,
-        Grouped                     $grouped,
-        Bundle                      $bundle
+        LoggerInterface $logger,
+        WebhookPublisher $publisher
     ) {
         $this->userContext = $userContext;
-        $this->integrationService = $integrationService;
-        $this->productRepository = $productRepository;
-        $this->configurable = $configurable;
-        $this->grouped = $grouped;
-        $this->bundle = $bundle;
-        $this->webhookHelper = $webhookHelper;
         $this->logger = $logger;
-    }
-
-    /**
-     * GetParentProductIds.
-     *
-     * @param string $productId
-     *
-     * @return array
-     */
-    public function getParentProductIds($productId)
-    {
-        $configurableParentIds = $this->configurable->getParentIdsByChild($productId);
-        $groupedParentIds = $this->grouped->getParentIdsByChild($productId);
-        $bundleParentIds = $this->bundle->getParentIdsByChild($productId);
-        return array_merge($configurableParentIds, $groupedParentIds, $bundleParentIds);
+        $this->publisher = $publisher;
     }
 
     /**
@@ -112,27 +84,20 @@ class InventoryUpdateObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            if ($this->isRestfulApiRequest()) {
-                $stockItem = $observer->getItem();
-                $productId = $stockItem->getProductId();
-                $parentIds = $this->getParentProductIds($productId);
-                foreach ($parentIds as $parentId) {
-                    $parentProduct = $this->productRepository->getById($parentId);
-                    $this->webhookHelper->makeWebhookRequest(
-                        Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE,
-                        [
-                        "id" => $parentId,
-                        "type_id" => $parentProduct->getTypeId(),
-                        "sku" => $parentProduct->getSku(),
-                        "visibility" => (string)$parentProduct->getVisibility(),
-                        ]
-                    );
-                }
+            if (!$this->isRestfulApiRequest()) {
+                return;
             }
+            $stockItem = $observer->getItem();
+            $productId = $stockItem->getProductId();
+            $event = new WebhookEvent();
+            $event->setId($productId)
+                ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)
+                ->setEvent(Constants::WEBHOOK_EVENT_UPDATE);
+            $this->publisher->execute($event);
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
-                    '[AfterShip TikTokShop] Faield to update product data on InventoryUpdateObserver, %s',
+                    '[AfterShip TikTokShop] Failed to update product data on InventoryUpdateObserver, %s',
                     $e->getMessage()
                 )
             );

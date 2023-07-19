@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
+    <broker topic="aftership.webhook.events" exchange="magento-db" type="db">
+        <queue name="aftership.webhook.events" consumer="aftership.webhook.events" consumerInstance="Magento\Framework\MessageQueue\Consumer" handler="AfterShip\TikTokShop\Model\Queue\WebhookConsumer::execute"/>
+    </broker>
+</config>

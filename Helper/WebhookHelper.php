@@ -11,7 +11,6 @@
 namespace AfterShip\TikTokShop\Helper;
 
 use AfterShip\TikTokShop\Constants;
-use Exception;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Integration\Api\IntegrationServiceInterface;
 use Magento\Integration\Api\OauthServiceInterface;

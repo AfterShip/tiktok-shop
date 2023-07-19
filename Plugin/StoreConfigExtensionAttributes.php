@@ -13,7 +13,6 @@ namespace AfterShip\TikTokShop\Plugin;
 
 use Magento\Integration\Api\IntegrationServiceInterface;
 use Magento\Authorization\Model\UserContextInterface;
-use Magento\Store\Api\Data\StoreConfigInterface;
 use Magento\Store\Api\StoreConfigManagerInterface;
 use Magento\Store\Api\Data\StoreConfigExtensionFactory;
 use AfterShip\TikTokShop\Constants;
