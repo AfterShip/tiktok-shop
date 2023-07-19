@@ -12,7 +12,6 @@ namespace AfterShip\TikTokShop\Model\Queue;
 
 use Psr\Log\LoggerInterface;
 use AfterShip\TikTokShop\Constants;
-use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\GroupedProduct\Model\Product\Type\Grouped;
