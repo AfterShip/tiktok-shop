@@ -29,6 +29,9 @@ class WebhookRequest extends DataObject implements WebhookEntityInterface
      */
     public function getId()
     {
+		if ($this->_getData(self::DATA_ID)) {
+			return $this->_getData(self::DATA_ID);
+		}
         return hash_hmac(
             'sha256',
             sprintf(
