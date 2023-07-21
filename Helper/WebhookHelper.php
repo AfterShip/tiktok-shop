@@ -2,7 +2,7 @@
 /**
  * TikTokShop WebhookHelper
  *
- * @author    AfterShip <apps@aftership.com>
+ * @author    AfterShip <support@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
  * @link      https://aftership.com
@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 /**
  * Main helper function.
  *
- * @author   AfterShip <apps@aftership.com>
+ * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */

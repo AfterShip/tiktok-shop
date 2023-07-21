@@ -2,7 +2,7 @@
 /**
  * TikTokShop WebhookEventInterface
  *
- * @author    AfterShip <apps@aftership.com>
+ * @author    AfterShip <support@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
  * @link      https://aftership.com
@@ -13,7 +13,7 @@ namespace AfterShip\TikTokShop\Api\Data;
 /**
  * Interface for WebhookEvent.
  *
- * @author   AfterShip <apps@aftership.com>
+ * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
