@@ -11,10 +11,11 @@
 namespace AfterShip\TikTokShop\Observer;
 
 use AfterShip\TikTokShop\Constants;
-use AfterShip\TikTokShop\Helper\WebhookHelper;
+use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Sales\Model\Order;
+use Magento\Framework\MessageQueue\PublisherInterface;
+use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -33,24 +34,24 @@ class SalesOrderUpdateObserver implements ObserverInterface
      */
     protected $logger;
     /**
-     * WebhookHelper Instance.
+     * Publisher Instance.
      *
-     * @var WebhookHelper
+     * @var WebhookPublisher
      */
-    protected $webhookHelper;
+    protected $publisher;
 
     /**
      * Construct
      *
      * @param LoggerInterface $logger
-     * @param WebhookHelper   $webhookHelper
+     * @param WebhookPublisher $publisher
      */
     public function __construct(
         LoggerInterface $logger,
-        WebhookHelper   $webhookHelper
+        WebhookPublisher $publisher
     ) {
         $this->logger = $logger;
-        $this->webhookHelper = $webhookHelper;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -65,14 +66,11 @@ class SalesOrderUpdateObserver implements ObserverInterface
         try {
             $order = $observer->getEvent()->getOrder();
             $orderId = $order->getId();
-            $orderStatus = $order->getStatus();
-            $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_ORDERS_UPDATE,
-                [
-                'id' => $orderId,
-                'status' => $orderStatus,
-                ]
-            );
+            $event = new WebhookEvent();
+            $event->setId($orderId)
+                ->setResource(Constants::WEBHOOK_RESOURCE_ORDERS)
+                ->setEVent(Constants::WEBHOOK_EVENT_UPDATE);
+            $this->publisher->execute($event);
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
