@@ -9,7 +9,7 @@ use Magento\Framework\MessageQueue\PublisherInterface;
 /**
  * WebhookPublisher for webhook.
  *
- * @author   AfterShip <apps@aftership.com>
+ * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
