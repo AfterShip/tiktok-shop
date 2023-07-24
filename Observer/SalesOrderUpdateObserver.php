@@ -55,6 +55,25 @@ class SalesOrderUpdateObserver implements ObserverInterface
     }
 
     /**
+     * Check if is running under PerformanceTest
+     *
+     * @return bool
+     */
+    public function isRunningUnderPerformanceTest()
+    {
+        $backtrace = debug_backtrace();
+        foreach ($backtrace as $trace) {
+            if (isset($trace['function'])
+                && isset($trace['file'])
+                && (strpos($trace['file'], 'GenerateFixturesCommand') !== false)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Execute
      *
      * @param Observer $observer
@@ -64,6 +83,12 @@ class SalesOrderUpdateObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            if ($this->isRunningUnderPerformanceTest()) {
+                $this->logger->error(
+                    '[AfterShip TikTokShop] SalesOrderUpdateObserver do not sync inventory during performance test'
+                );
+                return;
+            }
             $order = $observer->getEvent()->getOrder();
             $orderId = $order->getId();
             $event = new WebhookEvent();
