@@ -2,7 +2,7 @@
 /**
  * TikTokShop InventoryUpdateObserver
  *
- * @author    AfterShip <apps@aftership.com>
+ * @author    AfterShip <support@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
  * @link      https://aftership.com
@@ -15,13 +15,14 @@ use AfterShip\TikTokShop\Constants;
 use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use AfterShip\TikTokShop\Helper\CommonHelper;
 use Magento\Authorization\Model\UserContextInterface;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 
 /**
  * Send webhook when get inventory update event.
  *
- * @author   AfterShip <apps@aftership.com>
+ * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
@@ -47,20 +48,29 @@ class InventoryUpdateObserver implements ObserverInterface
     protected $publisher;
 
     /**
+     * Common Helper Instance.
+     * @var CommonHelper
+     */
+    protected $commonHelper;
+
+    /**
      * Construct
      *
      * @param UserContextInterface $userContext
      * @param LoggerInterface $logger
      * @param WebhookPublisher $publisher
+     * @param CommonHelper $commonHelper
      */
     public function __construct(
         UserContextInterface        $userContext,
         LoggerInterface $logger,
-        WebhookPublisher $publisher
+        WebhookPublisher $publisher,
+        CommonHelper $commonHelper
     ) {
         $this->userContext = $userContext;
         $this->logger = $logger;
         $this->publisher = $publisher;
+        $this->commonHelper = $commonHelper;
     }
 
     /**
@@ -85,6 +95,12 @@ class InventoryUpdateObserver implements ObserverInterface
     {
         try {
             if (!$this->isRestfulApiRequest()) {
+                return;
+            }
+            if ($this->commonHelper->isRunningUnderPerformanceTest()) {
+                $this->logger->error(
+                    '[AfterShip TikTokShop] InventoryUpdateObserver do not sync inventory during performance test'
+                );
                 return;
             }
             $stockItem = $observer->getItem();

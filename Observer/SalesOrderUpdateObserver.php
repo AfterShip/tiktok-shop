@@ -2,7 +2,7 @@
 /**
  * TikTokShop SalesOrderUpdateObserver
  *
- * @author    AfterShip <apps@aftership.com>
+ * @author    AfterShip <support@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
  * @link      https://aftership.com
@@ -11,17 +11,17 @@
 namespace AfterShip\TikTokShop\Observer;
 
 use AfterShip\TikTokShop\Constants;
+use AfterShip\TikTokShop\Helper\CommonHelper;
 use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
 
 /**
  * Send webhook when get order update event.
  *
- * @author   AfterShip <apps@aftership.com>
+ * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
@@ -41,17 +41,26 @@ class SalesOrderUpdateObserver implements ObserverInterface
     protected $publisher;
 
     /**
+     * Common Helper Instance.
+     * @var CommonHelper
+     */
+    protected $commonHelper;
+
+    /**
      * Construct
      *
      * @param LoggerInterface $logger
      * @param WebhookPublisher $publisher
+     * @param CommonHelper $commonHelper
      */
     public function __construct(
         LoggerInterface $logger,
-        WebhookPublisher $publisher
+        WebhookPublisher $publisher,
+        CommonHelper $commonHelper
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
+        $this->commonHelper = $commonHelper;
     }
 
     /**
@@ -64,6 +73,12 @@ class SalesOrderUpdateObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            if ($this->commonHelper->isRunningUnderPerformanceTest()) {
+                $this->logger->error(
+                    '[AfterShip TikTokShop] SalesOrderUpdateObserver do not sync inventory during performance test'
+                );
+                return;
+            }
             $order = $observer->getEvent()->getOrder();
             $orderId = $order->getId();
             $event = new WebhookEvent();

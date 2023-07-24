@@ -4,7 +4,7 @@
             name="aftership.webhook.events"
             queue="aftership.webhook.events"
             connection="db"
-            maxMessages="100"
+            maxMessages="1000"
             consumerInstance="Magento\Framework\MessageQueue\Consumer"
             handler="AfterShip\TikTokShop\Model\Queue\WebhookConsumer::execute" />
 </config>

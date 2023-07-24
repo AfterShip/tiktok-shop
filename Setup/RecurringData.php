@@ -2,7 +2,7 @@
 /**
  * TikTokShop RecurringData
  *
- * @author    AfterShip <apps@aftership.com>
+ * @author    AfterShip <support@aftership.com>
  * @copyright 2023 AfterShip
  * @license   MIT http://opensource.org/licenses/MIT
  * @link      https://aftership.com
@@ -22,7 +22,7 @@ use Magento\Store\Api\StoreRepositoryInterface;
 /**
  * Create TikTok integration when update plugin.
  *
- * @author   AfterShip <apps@aftership.com>
+ * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
@@ -108,7 +108,7 @@ class RecurringData implements InstallDataInterface
         $endpoint = sprintf("https://accounts.aftership.com/oauth/%s/magento-2/callback?store_id=%d", $app, $storeId);
         $integrationData = [
         'name' => $name,
-        'email' => 'apps@aftership.com',
+        'email' => 'support@aftership.com',
         'endpoint' => $endpoint,
         'identity_link_url' => $identityLinkUrl
         ];
