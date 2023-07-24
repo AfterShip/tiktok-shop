@@ -25,13 +25,6 @@ use Psr\Log\LoggerInterface;
  */
 class WebhookHelper
 {
-
-    /**
-     * Webhoks
-     *
-     * @var array|mixed
-     */
-    protected $webhooks = [];
     /**
      * ScopeConfig Instance
      *
@@ -75,11 +68,6 @@ class WebhookHelper
         $this->oauthService = $oauthService;
         $this->logger = $logger;
         $this->integrationService = $integrationService;
-        $webhooksJson = $this->scopeConfig->getValue(
-            Constants::WEBHOOK_CONFIG_SCOPE_PATH,
-            'default'
-        );
-        $this->webhooks = $webhooksJson ? json_decode($webhooksJson) : [];
     }
 
     /**
@@ -92,7 +80,12 @@ class WebhookHelper
      */
     public function makeWebhookRequest($topic, $data)
     {
-        foreach ($this->webhooks as $webhook) {
+        $webhooksJson = $this->scopeConfig->getValue(
+            Constants::WEBHOOK_CONFIG_SCOPE_PATH,
+            'default'
+        );
+        $webhooks = $webhooksJson ? json_decode($webhooksJson) : [];
+        foreach ($webhooks as $webhook) {
             if ($webhook->topic !== $topic) {
                 continue;
             }

@@ -202,15 +202,9 @@ class WebhookConsumer
         );
         foreach ($parentIds as $parentId) {
             $parentProduct = $this->productRepository->getById($parentId);
-            $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE,
-                [
-                    "id" => $parentProduct->getId(),
-                    "type_id" => $parentProduct->getTypeId(),
-                    "sku" => $parentProduct->getSku(),
-                    "visibility" => (string)$parentProduct->getVisibility(),
-                ]
-            );
+            $parentProduct->setData('updated_at', date('Y-m-d H:i:s'));
+            // This will trigger an webhook, no need to send an repeat event.
+            $this->productRepository->save($parentProduct);
         }
     }
 }

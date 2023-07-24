@@ -11,6 +11,7 @@
 namespace AfterShip\TikTokShop\Observer;
 
 use AfterShip\TikTokShop\Constants;
+use AfterShip\TikTokShop\Helper\CommonHelper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
@@ -40,36 +41,26 @@ class ProductSaveObserver implements ObserverInterface
     protected $publisher;
 
     /**
+     * Common Helper Instance.
+     * @var CommonHelper
+     */
+    protected $commonHelper;
+
+    /**
      * Construct
      *
      * @param LoggerInterface $logger
      * @param WebhookPublisher $publisher
+     * @param CommonHelper $commonHelper
      */
     public function __construct(
         LoggerInterface  $logger,
-        WebhookPublisher $publisher
+        WebhookPublisher $publisher,
+        CommonHelper $commonHelper
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
-    }
-
-    /**
-     * Check if is running under PerformanceTest
-     *
-     * @return bool
-     */
-    public function isRunningUnderPerformanceTest()
-    {
-        $backtrace = debug_backtrace();
-        foreach ($backtrace as $trace) {
-            if (isset($trace['function'])
-                && isset($trace['file'])
-                && (strpos($trace['file'], 'GenerateFixturesCommand') !== false)
-            ) {
-                return true;
-            }
-        }
-        return false;
+        $this->commonHelper = $commonHelper;
     }
 
     /**
@@ -82,7 +73,7 @@ class ProductSaveObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
-            if ($this->isRunningUnderPerformanceTest()) {
+            if ($this->commonHelper->isRunningUnderPerformanceTest()) {
                 $this->logger->error(
                     '[AfterShip TikTokShop] ProductSaveObserver do not sync inventory during performance test'
                 );
