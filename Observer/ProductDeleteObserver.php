@@ -54,6 +54,25 @@ class ProductDeleteObserver implements ObserverInterface
     }
 
     /**
+     * Check if is running under PerformanceTest
+     *
+     * @return bool
+     */
+    public function isRunningUnderPerformanceTest()
+    {
+        $backtrace = debug_backtrace();
+        foreach ($backtrace as $trace) {
+            if (isset($trace['function'])
+                && isset($trace['file'])
+                && (strpos($trace['file'], 'GenerateFixturesCommand') !== false)
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Execute
      *
      * @param Observer $observer
@@ -63,6 +82,12 @@ class ProductDeleteObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            if ($this->isRunningUnderPerformanceTest()) {
+                $this->logger->error(
+                    '[AfterShip TikTokShop] ProductDeleteObserver do not sync inventory during performance test'
+                );
+                return;
+            }
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();

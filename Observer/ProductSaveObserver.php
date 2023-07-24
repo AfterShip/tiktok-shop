@@ -46,11 +46,30 @@ class ProductSaveObserver implements ObserverInterface
      * @param WebhookPublisher $publisher
      */
     public function __construct(
-        LoggerInterface $logger,
+        LoggerInterface  $logger,
         WebhookPublisher $publisher
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
+    }
+
+    /**
+     * Check if is running under PerformanceTest
+     *
+     * @return bool
+     */
+    public function isRunningUnderPerformanceTest()
+    {
+        $backtrace = debug_backtrace();
+        foreach ($backtrace as $trace) {
+            if (isset($trace['function'])
+                && isset($trace['file'])
+                && (strpos($trace['file'], 'GenerateFixturesCommand') !== false)
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -63,6 +82,12 @@ class ProductSaveObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            if ($this->isRunningUnderPerformanceTest()) {
+                $this->logger->error(
+                    '[AfterShip TikTokShop] ProductSaveObserver do not sync inventory during performance test'
+                );
+                return;
+            }
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
