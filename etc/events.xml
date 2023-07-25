@@ -20,4 +20,7 @@
     <event name="sales_order_shipment_track_save_after">
         <observer name="SalesOrderUpdateObserver" instance="AfterShip\TikTokShop\Observer\SalesOrderUpdateObserver" />
     </event>
+    <event name="sales_order_shipment_track_delete_after">
+        <observer name="SalesOrderUpdateObserver" instance="AfterShip\TikTokShop\Observer\SalesOrderUpdateObserver" />
+    </event>
 </config>

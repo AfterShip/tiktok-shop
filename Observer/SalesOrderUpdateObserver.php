@@ -65,7 +65,7 @@ class SalesOrderUpdateObserver implements ObserverInterface
         LoggerInterface $logger,
         WebhookPublisher $publisher,
         CommonHelper $commonHelper,
-        OrderRepositoryInterface $orderRepository,
+        OrderRepositoryInterface $orderRepository
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
@@ -98,6 +98,7 @@ class SalesOrderUpdateObserver implements ObserverInterface
                     $order = $shipment->getOrder();
                     break;
                 case 'sales_order_shipment_track_save_after':
+                case 'sales_order_shipment_track_delete_after':
                     $track = $observer->getEvent()->getTrack();
                     $shipment = $track->getShipment();
                     $order = $shipment->getOrder();
