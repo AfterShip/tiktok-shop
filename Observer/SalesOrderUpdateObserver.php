@@ -16,6 +16,7 @@ use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -47,20 +48,29 @@ class SalesOrderUpdateObserver implements ObserverInterface
     protected $commonHelper;
 
     /**
+     * Order Repository Instance.
+     * @var OrderRepositoryInterface
+     */
+    protected $orderRepository;
+
+    /**
      * Construct
      *
      * @param LoggerInterface $logger
      * @param WebhookPublisher $publisher
      * @param CommonHelper $commonHelper
+     * @param OrderRepositoryInterface $orderRepository
      */
     public function __construct(
         LoggerInterface $logger,
         WebhookPublisher $publisher,
-        CommonHelper $commonHelper
+        CommonHelper $commonHelper,
+        OrderRepositoryInterface $orderRepository
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
         $this->commonHelper = $commonHelper;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
@@ -79,12 +89,38 @@ class SalesOrderUpdateObserver implements ObserverInterface
                 );
                 return;
             }
-            $order = $observer->getEvent()->getOrder();
+            $order = null;
+            $webhookEvent = Constants::WEBHOOK_EVENT_UPDATE;
+            $eventName = $observer->getEvent()->getName();
+            switch ($eventName) {
+                case 'sales_order_shipment_save_after':
+                    $shipment = $observer->getEvent()->getShipment();
+                    $order = $shipment->getOrder();
+                    break;
+                case 'sales_order_shipment_track_save_after':
+                case 'sales_order_shipment_track_delete_after':
+                    $track = $observer->getEvent()->getTrack();
+                    $shipment = $track->getShipment();
+                    $order = $shipment->getOrder();
+                    break;
+                case 'sales_order_save_after':
+                    $order = $observer->getEvent()->getOrder();
+                    break;
+                case 'sales_order_status_history_save_after':
+                    $orderComment = $observer->getStatusHistory();
+                    $order = $this->orderRepository->get($orderComment->getParentId());
+                    break;
+                default:
+                    break;
+            }
+            if (!$order) {
+                return;
+            }
             $orderId = $order->getId();
             $event = new WebhookEvent();
             $event->setId($orderId)
                 ->setResource(Constants::WEBHOOK_RESOURCE_ORDERS)
-                ->setEVent(Constants::WEBHOOK_EVENT_UPDATE);
+                ->setEvent($webhookEvent);
             $this->publisher->execute($event);
         } catch (\Exception $e) {
             $this->logger->error(
