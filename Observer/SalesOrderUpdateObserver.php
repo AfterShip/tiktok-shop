@@ -122,6 +122,28 @@ class SalesOrderUpdateObserver implements ObserverInterface
                 ->setResource(Constants::WEBHOOK_RESOURCE_ORDERS)
                 ->setEvent($webhookEvent);
             $this->publisher->execute($event);
+            // Send product update event for each order item.
+            $orderItems = $order->getAllItems();
+            foreach ($orderItems as $orderItem) {
+                try {
+                    $productId = $orderItem->getProductId();
+                    if (!$productId) {
+                        continue;
+                    }
+                    $event = new WebhookEvent();
+                    $event->setId($productId)
+                        ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)
+                        ->setEvent(Constants::WEBHOOK_EVENT_UPDATE);
+                    $this->publisher->execute($event);
+                } catch (\Exception $e) {
+                    $this->logger->error(
+                        sprintf(
+                            '[AfterShip TikTokShop] Failed to send order related products webhook on OrderUpdateObserver, %s',
+                            $e->getMessage()
+                        )
+                    );
+                }
+            }
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
