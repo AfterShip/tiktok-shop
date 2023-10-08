@@ -28,8 +28,8 @@ class Constants
 
     public const WEBHOOK_RESOURCE_ORDERS = 'orders';
     public const WEBHOOK_RESOURCE_PRODUCTS = 'products';
-    
-    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.13';
+
+    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.14';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
 
