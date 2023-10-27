@@ -196,7 +196,7 @@ class WebhookConsumer
                 "type_id" => $product->getTypeId(),
                 "sku" => $product->getSku(),
                 "visibility" => (string)$product->getVisibility(),
-                "parent_ids" => $parentIds,
+                "parent_ids" => array_map('strval', $parentIds),
             ]
         );
         foreach ($parentIds as $parentId) {
@@ -204,7 +204,7 @@ class WebhookConsumer
             $this->webhookHelper->makeWebhookRequest(
                 $topic,
                 [
-                    "id" => $parentId,
+                    "id" => (string)$parentId,
                     "type_id" => $parentProduct->getTypeId(),
                     "sku" => $parentProduct->getSku(),
                     "visibility" => (string)$parentProduct->getVisibility(),
