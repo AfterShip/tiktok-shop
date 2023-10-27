@@ -36,7 +36,6 @@ class Constants
     public const WEBHOOK_TOPIC_ORDERS_UPDATE = 'orders/update';
     public const WEBHOOK_TOPIC_ORDERS_DELETE = 'orders/delete';
     public const WEBHOOK_TOPIC_PRODUCTS_UPDATE = 'products/update';
-    public const WEBHOOK_TOPIC_VARIANTS_UPDATE = 'variants/update';
     public const WEBHOOK_TOPIC_PRODUCTS_DELETE = 'products/delete';
     public const WEBHOOK_TOPIC_VARIANTS_DELETE = 'variants/delete';
 }
