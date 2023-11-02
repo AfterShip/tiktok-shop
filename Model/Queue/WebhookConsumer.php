@@ -125,7 +125,7 @@ class WebhookConsumer
                 case Constants::WEBHOOK_RESOURCE_PRODUCTS:
                     $this->sendProductWebhook($message->getEvent(), $message->getId());
                     break;
-                
+
                 case Constants::WEBHOOK_RESOURCE_ORDERS:
                     $this->sendOrderWebhook($message->getEvent(), $message->getId());
                     break;
@@ -187,9 +187,7 @@ class WebhookConsumer
         }
         $product = $this->productRepository->getById($productId);
         $parentIds = $this->getParentProductIds($productId);
-        $topic = (count($parentIds) === 0) ?
-            Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE :
-            Constants::WEBHOOK_TOPIC_VARIANTS_UPDATE;
+        $topic = Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE;
         // Send webhook.
         $this->webhookHelper->makeWebhookRequest(
             $topic,
@@ -198,13 +196,20 @@ class WebhookConsumer
                 "type_id" => $product->getTypeId(),
                 "sku" => $product->getSku(),
                 "visibility" => (string)$product->getVisibility(),
+                "parent_ids" => array_map('strval', $parentIds),
             ]
         );
         foreach ($parentIds as $parentId) {
             $parentProduct = $this->productRepository->getById($parentId);
-            $parentProduct->setData('updated_at', date('Y-m-d H:i:s'));
-            // This will trigger an webhook, no need to send an repeat event.
-            $this->productRepository->save($parentProduct);
+            $this->webhookHelper->makeWebhookRequest(
+                $topic,
+                [
+                    "id" => (string)$parentId,
+                    "type_id" => $parentProduct->getTypeId(),
+                    "sku" => $parentProduct->getSku(),
+                    "visibility" => (string)$parentProduct->getVisibility(),
+                ]
+            );
         }
     }
 }
