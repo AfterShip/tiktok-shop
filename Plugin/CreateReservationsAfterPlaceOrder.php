@@ -9,6 +9,8 @@ use Magento\Framework\App\RequestInterface;
 use Magento\InventorySalesApi\Api\Data\SalesChannelInterface;
 use Magento\InventorySalesApi\Api\Data\SalesEventExtensionInterface;
 use Magento\InventorySalesApi\Api\Data\SalesEventInterface;
+use Magento\CatalogInventory\Model\StockManagement;
+use Magento\CatalogInventory\Observer\ItemsForReindex;
 
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -43,6 +45,15 @@ class CreateReservationsAfterPlaceOrder
      */
     protected $moduleManager;
 
+    /**
+     * @var StockManagement
+     */
+    protected $stockManagement;
+
+    /**
+     * @var ItemsForReindex
+     */
+    protected $itemsForReindex;
 
 
     public function __construct(
@@ -51,7 +62,9 @@ class CreateReservationsAfterPlaceOrder
         RequestInterface $request,
         ProductMetadataInterface $productMetadata,
         StockRegistryInterface $stockRegistry,
-        ModuleManager $moduleManager
+        ModuleManager $moduleManager,
+        StockManagement $stockManagement,
+        ItemsForReindex $itemsForReindex
     ) {
         $this->logger = $logger;
         $this->websiteRepository = $websiteRepository;
@@ -59,6 +72,8 @@ class CreateReservationsAfterPlaceOrder
         $this->productMetadata = $productMetadata;
         $this->stockRegistry = $stockRegistry;
         $this->moduleManager = $moduleManager;
+        $this->stockManagement = $stockManagement;
+        $this->itemsForReindex = $itemsForReindex;
     }
 
     /**
@@ -98,14 +113,16 @@ class CreateReservationsAfterPlaceOrder
      */
     private function updateStockItemQty(OrderInterface $order)
     {
+        $itemsById =[];
         foreach ($order->getItems() as $item) {
-            $sku = $item->getSku();
-            $stockItem = $this->stockRegistry->getStockItemBySku($sku);
-            $stockItem->setQty(
-                $stockItem->getQty() - $item->getQtyOrdered()
-            );
-            $this->stockRegistry->updateStockItemBySku($sku, $stockItem);
+            if (!isset($itemsById[$item->getProductId()])) {
+                $itemsById[$item->getProductId()] = 0;
+            }
+            $itemsById[$item->getProductId()] += $item->getQtyOrdered();
         }
+        $websiteId = (int)$order->getStore()->getWebsiteId();
+        $itemsForReindex = $this->stockManagement->registerProductsSale($itemsById, $websiteId);
+        $this->itemsForReindex->setItems($itemsForReindex);
     }
 
     /**
@@ -123,28 +140,37 @@ class CreateReservationsAfterPlaceOrder
         $getProductTypesBySkus = $objectManager->get(\Magento\InventoryCatalogApi\Model\GetProductTypesBySkusInterface::class);
         $isSourceItemManagementAllowedForProductType = $objectManager->get(\Magento\InventoryConfigurationApi\Model\IsSourceItemManagementAllowedForProductTypeInterface::class);
         $salesEventExtensionFactory = $objectManager->get(\Magento\InventorySalesApi\Api\Data\SalesEventExtensionFactory::class);
+        $getSkusByProductIds = $objectManager->get(\Magento\InventoryCatalogApi\Model\GetSkusByProductIdsInterface::class);
+        $stockByWebsiteIdResolver = $objectManager->get(\Magento\InventorySalesApi\Model\StockByWebsiteIdResolverInterface::class);
+        $checkItemsQuantity = $objectManager->get(\Magento\InventorySales\Model\CheckItemsQuantity::class);
 
-        $productSkus = [];
-        $itemsOrdered = [];
-        $itemsToSell = [];
+        $itemsById = $itemsBySku = $itemsToSell = [];
         foreach ($order->getItems() as $item) {
-            $productSkus[$item->getProductId()] = $item->getSku();
-            $itemsOrdered[$item->getProductId()] = $item->getQtyOrdered();
+            if (!isset($itemsById[$item->getProductId()])) {
+                $itemsById[$item->getProductId()] = 0;
+            }
+            $itemsById[$item->getProductId()] += $item->getQtyOrdered();
         }
+        $productSkus = $getSkusByProductIds->execute(array_keys($itemsById));
         $productTypes = $getProductTypesBySkus->execute($productSkus);
+
         foreach ($productSkus as $productId => $sku) {
             if (false === $isSourceItemManagementAllowedForProductType->execute($productTypes[$sku])) {
                 continue;
             }
 
+            $itemsBySku[$sku] = (float)$itemsById[$productId];
             $itemsToSell[] = $itemsToSellFactory->create([
                 'sku' => $sku,
-                'qty' => -(float)$itemsOrdered[$productId],
+                'qty' => -(float)$itemsById[$productId]
             ]);
         }
 
         $websiteId = (int)$order->getStore()->getWebsiteId();
         $websiteCode = $this->websiteRepository->getById($websiteId)->getCode();
+        $stockId = (int)$stockByWebsiteIdResolver->execute((int)$websiteId)->getStockId();
+
+        $checkItemsQuantity->execute($itemsBySku, $stockId);
 
         /** @var SalesEventExtensionInterface */
         $salesEventExtension = $salesEventExtensionFactory->create([
