@@ -122,7 +122,9 @@ class CreateReservationsAfterPlaceOrder
         }
         $websiteId = (int)$order->getStore()->getWebsiteId();
         $itemsForReindex = $this->stockManagement->registerProductsSale($itemsById, $websiteId);
-        $this->itemsForReindex->setItems($itemsForReindex);
+        if (count($itemsForReindex)) {
+            $this->itemsForReindex->setItems($itemsForReindex);
+        }
     }
 
     /**
