@@ -3,6 +3,9 @@
     <type name="Magento\Store\Api\StoreConfigManagerInterface">
         <plugin name="add_tts_version_to_store" type="AfterShip\TikTokShop\Plugin\StoreConfigExtensionAttributes"/>
     </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="inventory_reservations_placement" type="AfterShip\TikTokShop\Plugin\CreateReservationsAfterPlaceOrder"/>
+    </type>
     <preference for="AfterShip\TikTokShop\Api\WebhookEntityInterface" type="AfterShip\TikTokShop\Model\Api\WebhookRequest"/>
     <preference for="AfterShip\TikTokShop\Api\WebhookManagementInterface" type="AfterShip\TikTokShop\Model\Api\WebhookManagement"/>
     <preference for="AfterShip\TikTokShop\Api\Data\WebhookEventInterface" type="AfterShip\TikTokShop\Model\Api\WebhookEvent"/>
