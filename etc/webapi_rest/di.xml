@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Store\Api\StoreConfigManagerInterface">
+        <plugin name="add_tts_version_to_store" type="AfterShip\TikTokShop\Plugin\StoreConfigExtensionAttributes"/>
+    </type>
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="inventory_reservations_placement" type="AfterShip\TikTokShop\Plugin\CreateReservationsAfterPlaceOrder"/>
+    </type>
+</config>
