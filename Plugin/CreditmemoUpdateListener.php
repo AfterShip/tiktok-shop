@@ -3,10 +3,10 @@
 namespace AfterShip\TikTokShop\Plugin;
 
 use AfterShip\TikTokShop\Constants;
-use AfterShip\TikTokShop\Helper\CommonHelper;
 use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
+use Magento\Sales\Api\CreditmemoRepositoryInterface;
 
 class CreditmemoUpdateListener
 {
