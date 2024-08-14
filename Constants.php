@@ -31,6 +31,8 @@ class Constants
     public const WEBHOOK_RESOURCE_ORDERS = 'orders';
     public const WEBHOOK_RESOURCE_PRODUCTS = 'products';
 
+    public const WEBHOOK_RESOURCE_CREDITMEMOS = 'creditmemos';
+
     public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.17';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
@@ -40,4 +42,5 @@ class Constants
     public const WEBHOOK_TOPIC_PRODUCTS_UPDATE = 'products/update';
     public const WEBHOOK_TOPIC_PRODUCTS_DELETE = 'products/delete';
     public const WEBHOOK_TOPIC_VARIANTS_DELETE = 'variants/delete';
+    public const WEBHOOK_TOPIC_CREDITMEMOS_UPDATE = 'creditmemos/update';
 }
