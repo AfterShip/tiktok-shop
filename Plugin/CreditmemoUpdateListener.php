@@ -39,7 +39,8 @@ class CreditmemoUpdateListener
      * @return \Magento\Sales\Api\Data\CreditmemoRepositoryInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterSave(CreditmemoRepositoryInterface $subject, $result) {
+    public function afterSave(CreditmemoRepositoryInterface $subject, $result)
+    {
         try {
             $creditmemoId = $result->getEntityId();
 
@@ -49,7 +50,7 @@ class CreditmemoUpdateListener
                 ->setEVent(Constants::WEBHOOK_EVENT_UPDATE);
             $this->publisher->execute($event);
 
-        } catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
                     '[AfterShip TikTokShop] send creditmemo webhook failed after saving, %s',
