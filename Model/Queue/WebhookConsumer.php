@@ -130,6 +130,10 @@ class WebhookConsumer
                     $this->sendOrderWebhook($message->getEvent(), $message->getId());
                     break;
 
+                case Constants::WEBHOOK_RESOURCE_CREDITMEMOS:
+                    $this->sendCreditmemoWebhook($message->getEvent(), $message->getId());
+                    break;
+
                 default:
                     break;
 
@@ -208,6 +212,26 @@ class WebhookConsumer
                     "type_id" => $parentProduct->getTypeId(),
                     "sku" => $parentProduct->getSku(),
                     "visibility" => (string)$parentProduct->getVisibility(),
+                ]
+            );
+        }
+    }
+
+    /**
+     * Sending creditmemo webhook
+     *
+     * @param string $event
+     * @param string $creditmemoId
+     *
+     * @return void
+     */
+    public function sendCreditmemoWebhook($event, $creditmemoId)
+    {
+        if ($event == Constants::WEBHOOK_EVENT_UPDATE) {
+             $this->webhookHelper->makeWebhookRequest(
+                Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
+                [
+                    'id' => $creditmemoId
                 ]
             );
         }
