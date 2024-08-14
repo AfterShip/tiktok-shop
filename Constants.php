@@ -33,7 +33,7 @@ class Constants
 
     public const WEBHOOK_RESOURCE_CREDITMEMOS = 'creditmemos';
 
-    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.17';
+    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.18';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
 
