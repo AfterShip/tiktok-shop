@@ -127,27 +127,4 @@ class CreditmemoUpdateListener
         }
         return  $result;
     }
-
-
-    /**
-     * Verify is item valid for return qty to stock.
-     *
-     * @param string $sku
-     * @param string|null $typeId
-     * @return bool
-     */
-    private function isValidItem(string $sku, ?string $typeId): bool
-    {
-        //TODO: https://github.com/magento-engcom/msi/issues/1761
-        // If product type located in table sales_order_item is "grouped" replace it with "simple"
-        if ($typeId === 'grouped') {
-            $typeId = 'simple';
-        }
-
-        $productType = $typeId ?: $this->getProductTypesBySkus->execute(
-            [$sku]
-        )[$sku];
-
-        return $this->isSourceItemManagementAllowedForProductType->execute($productType);
-    }
 }
