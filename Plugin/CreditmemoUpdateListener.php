@@ -39,67 +39,20 @@ class CreditmemoUpdateListener
      */
     protected $commonHelper;
 
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var GetProductTypesBySkusInterface
-     */
-    private $getProductTypesBySkus;
-
-    /**
-     * @var IsSourceItemManagementAllowedForProductTypeInterface
-     */
-    private $isSourceItemManagementAllowedForProductType;
-
-    /**
-     * @var GetSkuFromOrderItemInterface
-     */
-    private $getSkuFromOrderItem;
-
-    /**
-     * @var ItemsToRefundInterfaceFactory
-     */
-    private $itemsToRefundFactory;
-
-    /**
-     * @var ProcessRefundItemsInterface
-     */
-    private $processRefundItems;
-
     public function __construct(
         LoggerInterface  $logger,
         WebhookPublisher $publisher,
-        CommonHelper $commonHelper,
-        RequestInterface $request,
-        GetProductTypesBySkusInterface $getProductTypesBySkus,
-        GetSkuFromOrderItemInterface $getSkuFromOrderItem,
-        ItemsToRefundInterfaceFactory $itemsToRefundFactory,
-        ProcessRefundItemsInterface $processRefundItems,
-        IsSourceItemManagementAllowedForProductTypeInterface $isSourceItemManagementAllowedForProductType
+        CommonHelper $commonHelper
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
         $this->commonHelper = $commonHelper;
-        $this->request = $request;
-        $this->getProductTypesBySkus = $getProductTypesBySkus;
-        $this->getSkuFromOrderItem = $getSkuFromOrderItem;
-        $this->itemsToRefundFactory = $itemsToRefundFactory;
-        $this->processRefundItems = $processRefundItems;
-        $this->isSourceItemManagementAllowedForProductType = $isSourceItemManagementAllowedForProductType;
     }
 
     /**
      * send creditmemo webhook when saving creditmemo
      *
      * @param \Magento\Sales\Api\CreditmemoRepositoryInterface $subject, $result
-     * @param GetSkuFromOrderItemInterface $getSkuFromOrderItem
-     * @param ItemsToRefundInterfaceFactory $itemsToRefundFactory
-     * @param ProcessRefundItemsInterface $processRefundItems
-     * @param IsSourceItemManagementAllowedForProductTypeInterface $isSourceItemManagementAllowedForProductType
-     * @param GetProductTypesBySkusInterface $getProductTypesBySkus
      * @return \Magento\Sales\Api\Data\CreditmemoRepositoryInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
