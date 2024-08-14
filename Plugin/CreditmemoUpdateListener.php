@@ -107,9 +107,6 @@ class CreditmemoUpdateListener
         try {
             $creditmemoId = $result->getEntityId();
 
-            // @var \Magento\Sales\Model\Order
-            $order = $result->getOrder();
-
             // send creditmemo webhook
             $event = new WebhookEvent();
             $event->setId($creditmemoId)
