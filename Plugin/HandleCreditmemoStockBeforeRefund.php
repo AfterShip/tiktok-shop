@@ -92,7 +92,7 @@ class HandleCreditmemoStockBeforeRefund
 
         $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
         $actions = explode(',', $actions);
-        if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)){
+        if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)&&($this->isMSIEnabled())){
             // todo@gerald debug log
             $this->logger->info(
                 sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] begin to set back to stock'));
