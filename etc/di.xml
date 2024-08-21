@@ -9,4 +9,7 @@
     <type name="Magento\Sales\Api\CreditmemoManagementInterface">
         <plugin name="handle_creditmemo_stock_before_refund" type="AfterShip\TikTokShop\Plugin\HandleCreditmemoStockBeforeRefund"/>
     </type>
+    <type name="Magento\Sales\Model\Service\CreditmemoService">
+        <plugin name="handle_creditmemo_stock_after_refund" type="AfterShip\TikTokShop\Plugin\HandleCreditmemoStockAfterRefund" />
+    </type>
 </config>
