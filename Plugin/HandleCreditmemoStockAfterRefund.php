@@ -123,7 +123,7 @@ class HandleCreditmemoStockAfterRefund
         }
 
         $this->logger->info(
-            sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] complete qty calculation %s', var_export($itemsById, true)));
+            sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] complete itemsById calculation %s', var_export($itemsById, true)));
 
         $websiteId = $this->stockConfiguration->getDefaultScopeId();
 
