@@ -23,6 +23,7 @@ class Constants
     public const INTEGRATION_APPS = ['feed'];
 
     public const HEADER_INVENTORY_BEHAVIOUR = 'as-inventory-behaviour';
+    public const HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT = 'increment';
 
     public const WEBHOOK_MESSAGE_QUEUE_TOPIC = 'aftership.webhook.events';
     public const WEBHOOK_EVENT_UPDATE = 'update';
