@@ -121,6 +121,10 @@ class HandleCreditmemoStockAfterRefund
             }
             $itemsById[$item->getProductId()] += $item->getQty();
         }
+
+        $this->logger->info(
+            sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] complete qty calculation %s', var_export($itemsById, true)));
+
         $websiteId = $this->stockConfiguration->getDefaultScopeId();
 
         // todo@gerald debug log
