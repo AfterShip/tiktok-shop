@@ -23,6 +23,7 @@ class Constants
     public const INTEGRATION_APPS = ['feed'];
 
     public const HEADER_INVENTORY_BEHAVIOUR = 'as-inventory-behaviour';
+    public const HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT = 'increment';
 
     public const WEBHOOK_MESSAGE_QUEUE_TOPIC = 'aftership.webhook.events';
     public const WEBHOOK_EVENT_UPDATE = 'update';
@@ -33,7 +34,7 @@ class Constants
 
     public const WEBHOOK_RESOURCE_CREDITMEMOS = 'creditmemos';
 
-    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.17';
+    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.19';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
 
