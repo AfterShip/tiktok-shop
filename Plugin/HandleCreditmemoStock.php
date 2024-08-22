@@ -16,7 +16,7 @@ use Magento\CatalogInventory\Model\Spi\StockRegistryProviderInterface;
 use Magento\CatalogInventory\Model\StockManagement;
 use Psr\Log\LoggerInterface;
 
-class HandleCreditmemoStockAfterRefund
+class HandleCreditmemoStock
 {
     /**
      * LoggerInterface Instance.
@@ -74,6 +74,40 @@ class HandleCreditmemoStockAfterRefund
     }
 
     /**
+     * Before plugin for refund method
+     *
+     * @param CreditmemoManagementInterface $subject
+     * @param CreditmemoInterface $creditmemo
+     * @param bool $offlineRequested
+     * @return array
+     */
+    public function beforeRefund(
+        CreditmemoManagementInterface $subject,
+        CreditmemoInterface $creditmemo,
+        $offlineRequested = false
+    ) {
+        // todo@gerald debug log
+        $this->logger->info(
+            sprintf('[AfterShip TikTokShop HandleCreditmemoStock] new version handle stock before refund'));
+
+        $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
+        $actions = explode(',', $actions);
+        if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)&&(!($this->isMSIEnabled()))){
+            // todo@gerald debug log
+            $this->logger->info(
+                sprintf('[AfterShip TikTokShop HandleCreditmemoStock] begin to set back to stock'));
+
+            foreach ($creditmemo->getAllItems() as $creditmemoItem){
+                $creditmemoItem->setBackToStock(true);
+            }
+        }
+
+        // 返回参数数组
+        return [$creditmemo, $offlineRequested];
+    }
+
+
+    /**
      * Sets status and state for order
      *
      * @param CreditmemoService   $subject
@@ -85,20 +119,20 @@ class HandleCreditmemoStockAfterRefund
         try {
             // todo@gerald debug log
             $this->logger->info(
-                sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] handle stock after refund, id: %d', $creditmemo->getEntityId()));
+                sprintf('[AfterShip TikTokShop HandleCreditmemoStock] handle stock after refund jump !!! '));
 
-            $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
-            $actions = explode(',', $actions);
-            if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)&&(!($this->isMSIEnabled()))){
-                // todo@gerald debug log
-                $this->logger->info(
-                    sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] version 2.3 MSI NOT Enabled'));
-                $this->updateStockItemQty($creditmemo);
-            }
+//            $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
+//            $actions = explode(',', $actions);
+//            if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)&&(!($this->isMSIEnabled()))){
+//                // todo@gerald debug log
+//                $this->logger->info(
+//                    sprintf('[AfterShip TikTokShop HandleCreditmemoStock] version 2.3 MSI NOT Enabled'));
+//                $this->updateStockItemQty($creditmemo);
+//            }
         }catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
-                    '[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] Failed to handle stock after refund, msg %s',
+                    '[AfterShip TikTokShop HandleCreditmemoStock] Failed to handle stock after refund, msg %s',
                     $e->getMessage()
                 )
             );
@@ -123,13 +157,13 @@ class HandleCreditmemoStockAfterRefund
         }
 
         $this->logger->info(
-            sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] complete itemsById calculation %s', var_export($itemsById, true)));
+            sprintf('[AfterShip TikTokShop HandleCreditmemoStock] complete itemsById calculation %s', var_export($itemsById, true)));
 
         $websiteId = $this->stockConfiguration->getDefaultScopeId();
 
         // todo@gerald debug log
         $this->logger->info(
-            sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] get websiteid %d', $websiteId));
+            sprintf('[AfterShip TikTokShop HandleCreditmemoStock] get websiteid %d', $websiteId));
 
         $items = [];
         $itemsForReindex = [];
@@ -138,7 +172,7 @@ class HandleCreditmemoStockAfterRefund
         }catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
-                    '[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] Failed to revertProductsSale msg %s',
+                    '[AfterShip TikTokShop HandleCreditmemoStock] Failed to revertProductsSale msg %s',
                     $e->getMessage()
                 )
             );
@@ -147,7 +181,7 @@ class HandleCreditmemoStockAfterRefund
 
         // todo@gerald debug log
         $this->logger->info(
-            sprintf('[AfterShip TikTokShop HandleCreditmemoStockBeforeRefund] revertProductsSale success'));
+            sprintf('[AfterShip TikTokShop HandleCreditmemoStock] revertProductsSale success'));
 
         foreach ($items as $productId => $qty){
             $stockItem = $this->stockRegistryProvider->getStockItem($productId, $websiteId);
