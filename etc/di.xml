@@ -6,4 +6,7 @@
     <type name="Magento\Sales\Api\CreditmemoRepositoryInterface">
         <plugin name="creditmemo_update_listener" type="AfterShip\TikTokShop\Plugin\CreditmemoUpdateListener"/>
     </type>
+    <type name="Magento\Sales\Model\Service\CreditmemoService">
+        <plugin name="handle_creditmemo_stock" type="AfterShip\TikTokShop\Plugin\HandleCreditmemoStock" />
+    </type>
 </config>
