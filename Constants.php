@@ -14,7 +14,6 @@ namespace AfterShip\TikTokShop;
 /**
  * All Constants use for this plugin.
  *
- * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */

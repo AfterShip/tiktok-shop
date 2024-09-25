@@ -2,7 +2,6 @@
 
 namespace AfterShip\TikTokShop\Plugin;
 
-
 use AfterShip\TikTokShop\Constants;
 use Magento\Sales\Api\CreditmemoManagementInterface;
 use Magento\Sales\Api\Data\CreditmemoInterface;
@@ -34,7 +33,6 @@ class HandleCreditmemoStock
         LoggerInterface  $logger,
         RequestInterface $request,
         StockManagement $stockManagement
-
     ) {
         $this->logger = $logger;
         $this->request = $request;
@@ -57,12 +55,12 @@ class HandleCreditmemoStock
         try {
             $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
                     $actions = explode(',', $actions);
-                    if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)){
-                        foreach ($creditmemo->getAllItems() as $creditmemoItem){
-                            $creditmemoItem->setBackToStock(true);
-                        }
-                    }
-        }catch (\Exception $e) {
+            if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)) {
+                foreach ($creditmemo->getAllItems() as $creditmemoItem) {
+                    $creditmemoItem->setBackToStock(true);
+                }
+            }
+        } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
                     '[AfterShip TikTokShop] handle stock before refund failed, error msg: %s',
