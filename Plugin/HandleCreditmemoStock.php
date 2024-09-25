@@ -54,23 +54,22 @@ class HandleCreditmemoStock
         CreditmemoInterface $creditmemo,
         $offlineRequested = false
     ) {
-        // todo@gerald debug log
-        $this->logger->info(
-            sprintf('[AfterShip TikTokShop HandleCreditmemoStock] new version handle stock before refund'));
-
-        $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
-        $actions = explode(',', $actions);
-        if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)){
-            // todo@gerald debug log
-            $this->logger->info(
-                sprintf('[AfterShip TikTokShop HandleCreditmemoStock] begin to set back to stock'));
-
-            foreach ($creditmemo->getAllItems() as $creditmemoItem){
-                $creditmemoItem->setBackToStock(true);
-            }
+        try {
+            $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
+                    $actions = explode(',', $actions);
+                    if (in_array(Constants::HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT, $actions)){
+                        foreach ($creditmemo->getAllItems() as $creditmemoItem){
+                            $creditmemoItem->setBackToStock(true);
+                        }
+                    }
+        }catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] handle stock before refund failed, error msg: %s',
+                    $e->getMessage()
+                )
+            );
         }
-
-        // 返回参数数组
         return [$creditmemo, $offlineRequested];
     }
 }
