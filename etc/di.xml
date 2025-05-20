@@ -9,4 +9,7 @@
     <type name="Magento\Sales\Model\Service\CreditmemoService">
         <plugin name="handle_creditmemo_stock" type="AfterShip\TikTokShop\Plugin\HandleCreditmemoStock" />
     </type>
+    <type name="Magento\Inventory\Model\ResourceModel\SourceItem\SaveMultiple">
+        <plugin name="inventory_source_item_after_execute" type="AfterShip\TikTokShop\Plugin\InventorySourceItemAfterExecute"/>
+    </type>
 </config>
