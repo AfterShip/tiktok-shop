@@ -14,7 +14,6 @@ namespace AfterShip\TikTokShop;
 /**
  * All Constants use for this plugin.
  *
- * @author   AfterShip <support@aftership.com>
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
@@ -34,7 +33,7 @@ class Constants
 
     public const WEBHOOK_RESOURCE_CREDITMEMOS = 'creditmemos';
 
-    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.19';
+    public const AFTERSHIP_TIKTOK_SHOP_VERSION = '1.0.21';
 
     public const WEBHOOK_CONFIG_SCOPE_PATH = 'aftership/webhooks/webhooks';
 
