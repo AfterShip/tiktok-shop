@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * TikTokShop CreateReservationsAfterPlaceOrder
+ *
+ * @author    AfterShip <support@aftership.com>
+ * @copyright 2023 AfterShip
+ * @license   MIT http://opensource.org/licenses/MIT
+ * @link      https://aftership.com
+ */
 namespace AfterShip\TikTokShop\Plugin;
 
 use AfterShip\TikTokShop\Constants;
@@ -250,12 +257,6 @@ class CreateReservationsAfterPlaceOrder
                 'X-AS-Inventory-Reservation-Result',
                 json_encode($result),
                 true
-            );
-            $this->logger->info(
-                sprintf(
-                    '[AfterShip TikTokShop] response header X-AS-Inventory-Reservation-Result: %s',
-                    json_encode($result)
-                )
             );
             // 确保响应被发送
             $response->sendResponse();
