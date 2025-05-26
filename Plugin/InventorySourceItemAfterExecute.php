@@ -78,31 +78,17 @@ class InventorySourceItemAfterExecute
      * @param SaveMultiple $subject
      * @param mixed $result
      * @param array $sourceItems
-     * 
+     *
      * @return mixed
      */
     public function afterExecute(
-        SaveMultiple $subject, 
-        $result, 
+        SaveMultiple $subject,
+        $result,
         array $sourceItems
     ) {
-        // 检查是否来自 Stock Sources CSV import
         $isFromStockSourcesCsvImport = $this->_isFromStockSourcesCsvImport();
-        
-        $this->logger->info(
-            'InventorySourceItemAfterExecute - 开始执行',
-            [
-                'source_items_count' => count($sourceItems),
-                'is_from_csv' => $isFromStockSourcesCsvImport,
-                'result' => $result
-            ]
-        );
 
         if (empty($sourceItems) || !$isFromStockSourcesCsvImport) {
-            $this->logger->info(
-                'InventorySourceItemAfterExecute - 跳过处理: ' . 
-                (empty($sourceItems) ? 'sourceItems为空' : '非CSV导入操作')
-            );
             return $result;
         }
 
@@ -115,30 +101,16 @@ class InventorySourceItemAfterExecute
     }
 
     /**
-     * 判断是否来自CSV导入
+     * Check if the request is from stock sources CSV import
      *
      * @return bool
      */
     private function _isFromStockSourcesCsvImport()
     {
-        // 通过请求路径判断
         $requestPath = $this->request->getPathInfo();
         
-        // 检查是否为导入操作
         if (strpos($requestPath, '/admin/import/start/') !== false) {
-            // 获取请求参数
             $entityType = $this->request->getParam('entity');
-            
-            $this->logger->info(
-                'InventorySourceItemAfterExecute - 检查导入参数',
-                [
-                    'path' => $requestPath,
-                    'entity_type' => $entityType,
-                    'is_stock_sources' => $entityType === 'stock_sources'
-                ]
-            );
-
-            // 检查是否为库存源导入
             if ($entityType === 'stock_sources') {
                 return true;
             }
