@@ -111,15 +111,13 @@ class CreateReservationsAfterPlaceOrder
             $actions = explode(',', $actions);
             if (in_array('decrement', $actions)) {
                 if ($this->isMSIEnabled()) {
-                    $this->sendSalesEvent($order);
-
-                    $result['status'] = 'success';
                     $result['method'] = 'sendSalesEvent';
-                } else {
-                    $this->updateStockItemQty($order);
-
+                    $this->sendSalesEvent($order);
                     $result['status'] = 'success';
+                } else {
                     $result['method'] = 'updateStockItemQty';
+                    $this->updateStockItemQty($order);
+                    $result['status'] = 'success';
                 }
             }
         } catch (\Exception $e) {
@@ -127,8 +125,9 @@ class CreateReservationsAfterPlaceOrder
             $result['message'] = $e->getMessage();
             $this->logger->error(
                 sprintf(
-                    '[AfterShip TikTokShop] Failed to create reservation for order %s, %s',
+                    '[AfterShip TikTokShop] Failed to create reservation for order %s using method: %s, error message: %s',
                     $order->getIncrementId(),
+                    $result['method'] ?? 'unknown',
                     $e->getMessage()
                 )
             );
