@@ -96,7 +96,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
         try {
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
                 $this->logger->error(
-                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver do not sync inventory during performance test'
+                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver do not handle during performance test'
                 );
                 return;
             }
@@ -155,19 +155,19 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                 }
             } catch (NoSuchEntityException $e) {
                 $this->logger->error(
-                    '[AfterShip TikTokShop] _processSourceItems - product not found',
-                    [
-                        'sku' => $sourceItem->getSku(),
-                        'error' => $e->getMessage()
-                    ]
+                    sprintf(
+                        '[AfterShip TikTokShop] Import sku not found, sku: %s, error: %s',
+                        $sourceItem->getSku(),
+                        $e->getMessage()
+                    )
                 );
             } catch (\Exception $e) {
                 $this->logger->error(
-                    '[AfterShip TikTokShop] _processSourceItems - error',
-                    [
-                        'sku' => $sourceItem->getSku(),
-                        'error' => $e->getMessage()
-                    ]
+                    sprintf(
+                        '[AfterShip TikTokShop] Import sku process error, sku: %s, error: %s',
+                        $sourceItem->getSku(),
+                        $e->getMessage()
+                    )
                 );
             }
         }
@@ -184,11 +184,11 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                 $this->publisher->execute($event);
             } catch (\Exception $e) {
                 $this->logger->error(
-                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver - send webhook failed',
-                    [
-                        'product_id' => $productId,
-                        'error' => $e->getMessage()
-                    ]
+                    sprintf(
+                        '[AfterShip TikTokShop] Send webhook failed, product_id: %s, error: %s',
+                        $productId,
+                        $e->getMessage()
+                    )
                 );
             }
         }
