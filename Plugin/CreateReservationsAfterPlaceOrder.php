@@ -227,7 +227,7 @@ class CreateReservationsAfterPlaceOrder
         
         $this->logger->info(
             sprintf(
-                '[AfterShip TikTokShop] Processing to create reservation for order %s',
+                '[AfterShip TikTokShop] Processing sendSalesEvent for order %s',
                 $order->getIncrementId()
             )
         );
