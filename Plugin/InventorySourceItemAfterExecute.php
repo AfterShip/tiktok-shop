@@ -86,16 +86,22 @@ class InventorySourceItemAfterExecute
         $result,
         array $sourceItems
     ) {
-        $isFromStockSourcesCsvImport = $this->_isFromStockSourcesCsvImport();
+        try {
+            $isFromStockSourcesCsvImport = $this->_isFromStockSourcesCsvImport();
 
-        if (empty($sourceItems) || !$isFromStockSourcesCsvImport) {
-            return $result;
+            if (empty($sourceItems) || !$isFromStockSourcesCsvImport) {
+                return $result;
+            }
+
+            $this->eventManager->dispatch(
+                'aftership_inventory_source_item_save_after',
+                ['items' => $sourceItems]
+            );
+        } catch (\Exception $e) {
+            $this->logger->warning(
+                sprintf('[AfterShip TikTokShop] Inventory Source Item afterExecute error: %s', $e->getMessage())
+            );
         }
-
-        $this->eventManager->dispatch(
-            'aftership_inventory_source_item_save_after',
-            ['items' => $sourceItems]
-        );
 
         return $result;
     }

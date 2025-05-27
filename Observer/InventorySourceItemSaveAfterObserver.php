@@ -95,8 +95,8 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
     {
         try {
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
-                $this->logger->error(
-                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver do not sync inventory during performance test'
+                $this->logger->warning(
+                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver do not handle during performance test'
                 );
                 return;
             }
@@ -106,7 +106,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
             // process source items from import
             $this->_processSourceItems($sourceItems);
         } catch (\Exception $e) {
-            $this->logger->error(
+            $this->logger->warning(
                 sprintf(
                     '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver execute errors: %s',
                     $e->getMessage()
@@ -154,20 +154,20 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                         break;
                 }
             } catch (NoSuchEntityException $e) {
-                $this->logger->error(
-                    '[AfterShip TikTokShop] _processSourceItems - product not found',
-                    [
-                        'sku' => $sourceItem->getSku(),
-                        'error' => $e->getMessage()
-                    ]
+                $this->logger->warning(
+                    sprintf(
+                        '[AfterShip TikTokShop] Import sku not found, sku: %s, error: %s',
+                        $sourceItem->getSku(),
+                        $e->getMessage()
+                    )
                 );
             } catch (\Exception $e) {
-                $this->logger->error(
-                    '[AfterShip TikTokShop] _processSourceItems - error',
-                    [
-                        'sku' => $sourceItem->getSku(),
-                        'error' => $e->getMessage()
-                    ]
+                $this->logger->warning(
+                    sprintf(
+                        '[AfterShip TikTokShop] Import sku process error, sku: %s, error: %s',
+                        $sourceItem->getSku(),
+                        $e->getMessage()
+                    )
                 );
             }
         }
@@ -183,12 +183,12 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                     ->setEvent(Constants::WEBHOOK_EVENT_UPDATE);
                 $this->publisher->execute($event);
             } catch (\Exception $e) {
-                $this->logger->error(
-                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver - send webhook failed',
-                    [
-                        'product_id' => $productId,
-                        'error' => $e->getMessage()
-                    ]
+                $this->logger->warning(
+                    sprintf(
+                        '[AfterShip TikTokShop] Send webhook failed, product_id: %s, error: %s',
+                        $productId,
+                        $e->getMessage()
+                    )
                 );
             }
         }
