@@ -101,7 +101,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                 return;
             }
 
-            $sourceItems = $observer->getData('items');
+            $sourceItems = $observer->getData('items') ?? [];
 
             // process source items from import
             $this->_processSourceItems($sourceItems);
@@ -142,7 +142,9 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                         // check if the product is configurable
                         $parentIds = $this->configurableProduct->getParentIdsByChild($product->getId());
                         if (!empty($parentIds)) {
-                            $productIdsToNotify = array_merge($productIdsToNotify, $parentIds);
+                            foreach ($parentIds as $parentId) {
+                                $productIdsToNotify[] = $parentId;
+                            }
                         } else {
                             $productIdsToNotify[] = $product->getId();
                         }
