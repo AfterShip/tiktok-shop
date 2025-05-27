@@ -1,5 +1,12 @@
 <?php
-
+/**
+ * TikTokShop CreateReservationsAfterPlaceOrder
+ *
+ * @author    AfterShip <support@aftership.com>
+ * @copyright 2023 AfterShip
+ * @license   MIT http://opensource.org/licenses/MIT
+ * @link      https://aftership.com
+ */
 namespace AfterShip\TikTokShop\Plugin;
 
 use AfterShip\TikTokShop\Constants;
@@ -17,6 +24,7 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Store\Api\WebsiteRepositoryInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\Webapi\Rest\Response;
 
 class CreateReservationsAfterPlaceOrder
 {
@@ -55,6 +63,10 @@ class CreateReservationsAfterPlaceOrder
      */
     protected $itemsForReindex;
 
+    /**
+     * @var Response
+     */
+    private $_response;
 
     public function __construct(
         LoggerInterface $logger,
@@ -64,7 +76,8 @@ class CreateReservationsAfterPlaceOrder
         StockRegistryInterface $stockRegistry,
         ModuleManager $moduleManager,
         StockManagement $stockManagement,
-        ItemsForReindex $itemsForReindex
+        ItemsForReindex $itemsForReindex,
+        Response $response
     ) {
         $this->logger = $logger;
         $this->websiteRepository = $websiteRepository;
@@ -74,6 +87,7 @@ class CreateReservationsAfterPlaceOrder
         $this->moduleManager = $moduleManager;
         $this->stockManagement = $stockManagement;
         $this->itemsForReindex = $itemsForReindex;
+        $this->_response = $response;
     }
 
     /**
@@ -85,25 +99,43 @@ class CreateReservationsAfterPlaceOrder
         OrderRepositoryInterface $subject,
         OrderInterface $order
     ) {
+        $result = [
+            'order_id' => $order->getIncrementId(),
+            'status' => 'not_executed', // default status
+            'method' => '',
+            'message' => 'OK'
+        ];
+
         try {
             $actions = $this->request->getHeader(Constants::HEADER_INVENTORY_BEHAVIOUR, '');
             $actions = explode(',', $actions);
             if (in_array('decrement', $actions)) {
                 if ($this->isMSIEnabled()) {
+                    $result['method'] = 'sendSalesEvent';
                     $this->sendSalesEvent($order);
+                    $result['status'] = 'success';
                 } else {
+                    $result['method'] = 'updateStockItemQty';
                     $this->updateStockItemQty($order);
+                    $result['status'] = 'success';
                 }
             }
         } catch (\Exception $e) {
+            $result['status'] = 'failed';
+            $result['message'] = $e->getMessage();
             $this->logger->error(
                 sprintf(
-                    '[AfterShip TikTokShop] Failed to create reservation for order %s, %s',
+                    '[AfterShip TikTokShop] Failed to create reservation for order %s using method: %s, error message: %s',
                     $order->getIncrementId(),
+                    $result['method'] ?? 'unknown',
                     $e->getMessage()
                 )
             );
         }
+
+        // set custom response header
+        $this->setInventoryReservationHeader($result);
+
         return $order;
     }
 
@@ -192,6 +224,13 @@ class CreateReservationsAfterPlaceOrder
                 'code' => $websiteCode
             ]
         ]);
+        
+        $this->logger->info(
+            sprintf(
+                '[AfterShip TikTokShop] Processing to create reservation for order %s',
+                $order->getIncrementId()
+            )
+        );
         $placeReservationsForSalesEvent->execute($itemsToSell, $salesChannel, $salesEvent);
     }
 
@@ -201,5 +240,29 @@ class CreateReservationsAfterPlaceOrder
     private function isMSIEnabled()
     {
         return $this->moduleManager->isEnabled('Magento_Inventory');
+    }
+
+    /**
+     * Set inventory reservation result header
+     *
+     * @param array $result
+     * @return void
+     */
+    private function setInventoryReservationHeader(array $result)
+    {
+        try {
+            $this->_response->setHeader(
+                'X-AS-Inventory-Reservation-Result',
+                json_encode($result),
+                true
+            );
+        } catch (\Exception $e) {
+            $this->logger->error(
+                sprintf(
+                    '[AfterShip TikTokShop] Failed to set inventory reservation header: %s',
+                    $e->getMessage()
+                )
+            );
+        }
     }
 }
