@@ -24,7 +24,7 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Store\Api\WebsiteRepositoryInterface;
 use Magento\Framework\Module\Manager as ModuleManager;
 use Psr\Log\LoggerInterface;
-use Magento\Framework\Webapi\ResponseFactory;
+use Magento\Framework\Webapi\Rest\Response;
 
 class CreateReservationsAfterPlaceOrder
 {
@@ -64,9 +64,9 @@ class CreateReservationsAfterPlaceOrder
     protected $itemsForReindex;
 
     /**
-     * @var ResponseFactory
+     * @var Response
      */
-    private $responseFactory;
+    private $_response;
 
     public function __construct(
         LoggerInterface $logger,
@@ -77,7 +77,7 @@ class CreateReservationsAfterPlaceOrder
         ModuleManager $moduleManager,
         StockManagement $stockManagement,
         ItemsForReindex $itemsForReindex,
-        ResponseFactory $responseFactory
+        Response $response
     ) {
         $this->logger = $logger;
         $this->websiteRepository = $websiteRepository;
@@ -87,7 +87,7 @@ class CreateReservationsAfterPlaceOrder
         $this->moduleManager = $moduleManager;
         $this->stockManagement = $stockManagement;
         $this->itemsForReindex = $itemsForReindex;
-        $this->responseFactory = $responseFactory;
+        $this->_response = $response;
     }
 
     /**
@@ -101,9 +101,9 @@ class CreateReservationsAfterPlaceOrder
     ) {
         $result = [
             'order_id' => $order->getIncrementId(),
-            'status' => 'not_executed', // 默认状态：未执行
+            'status' => 'not_executed', // default status
             'method' => '',
-            'message' => ''
+            'message' => 'OK'
         ];
 
         try {
@@ -133,7 +133,7 @@ class CreateReservationsAfterPlaceOrder
             );
         }
 
-        // 设置 response header
+        // set custom response header
         $this->setInventoryReservationHeader($result);
 
         return $order;
@@ -243,7 +243,7 @@ class CreateReservationsAfterPlaceOrder
     }
 
     /**
-     * 设置库存扣减结果的 header
+     * Set inventory reservation result header
      *
      * @param array $result
      * @return void
@@ -251,14 +251,11 @@ class CreateReservationsAfterPlaceOrder
     private function setInventoryReservationHeader(array $result)
     {
         try {
-            $response = $this->responseFactory->create();
-            $response->setHeader(
+            $this->_response->setHeader(
                 'X-AS-Inventory-Reservation-Result',
                 json_encode($result),
                 true
             );
-            // 确保响应被发送
-            $response->sendResponse();
         } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
