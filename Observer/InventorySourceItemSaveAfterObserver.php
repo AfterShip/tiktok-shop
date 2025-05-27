@@ -95,7 +95,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
     {
         try {
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
-                $this->logger->error(
+                $this->logger->warning(
                     '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver do not handle during performance test'
                 );
                 return;
@@ -106,7 +106,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
             // process source items from import
             $this->_processSourceItems($sourceItems);
         } catch (\Exception $e) {
-            $this->logger->error(
+            $this->logger->warning(
                 sprintf(
                     '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver execute errors: %s',
                     $e->getMessage()
@@ -154,7 +154,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                         break;
                 }
             } catch (NoSuchEntityException $e) {
-                $this->logger->error(
+                $this->logger->warning(
                     sprintf(
                         '[AfterShip TikTokShop] Import sku not found, sku: %s, error: %s',
                         $sourceItem->getSku(),
@@ -162,7 +162,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                     )
                 );
             } catch (\Exception $e) {
-                $this->logger->error(
+                $this->logger->warning(
                     sprintf(
                         '[AfterShip TikTokShop] Import sku process error, sku: %s, error: %s',
                         $sourceItem->getSku(),
@@ -183,7 +183,7 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
                     ->setEvent(Constants::WEBHOOK_EVENT_UPDATE);
                 $this->publisher->execute($event);
             } catch (\Exception $e) {
-                $this->logger->error(
+                $this->logger->warning(
                     sprintf(
                         '[AfterShip TikTokShop] Send webhook failed, product_id: %s, error: %s',
                         $productId,

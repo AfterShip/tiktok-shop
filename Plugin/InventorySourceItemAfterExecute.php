@@ -98,7 +98,7 @@ class InventorySourceItemAfterExecute
                 ['items' => $sourceItems]
             );
         } catch (\Exception $e) {
-            $this->logger->error(
+            $this->logger->warning(
                 sprintf('[AfterShip TikTokShop] Inventory Source Item afterExecute error: %s', $e->getMessage())
             );
         }
