@@ -87,9 +87,8 @@ class InventorySourceItemAfterExecute
         array $sourceItems
     ) {
         try {
-            $isFromStockSourcesCsvImport = $this->_isFromStockSourcesCsvImport();
 
-            if (empty($sourceItems) || !$isFromStockSourcesCsvImport) {
+            if (empty($sourceItems)) {
                 return $result;
             }
 
@@ -106,22 +105,4 @@ class InventorySourceItemAfterExecute
         return $result;
     }
 
-    /**
-     * Check if the request is from stock sources CSV import
-     *
-     * @return bool
-     */
-    private function _isFromStockSourcesCsvImport()
-    {
-        $requestPath = $this->request->getPathInfo();
-        
-        if (strpos($requestPath, '/admin/import/start/') !== false) {
-            $entityType = $this->request->getParam('entity');
-            if ($entityType === 'stock_sources') {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
