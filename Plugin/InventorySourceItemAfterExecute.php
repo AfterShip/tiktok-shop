@@ -17,11 +17,6 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class InventorySourceItemAfterExecute
- *
- * @package AfterShip\TikTokShop\Plugin
- */
 class InventorySourceItemAfterExecute
 {
     /**
@@ -104,5 +99,4 @@ class InventorySourceItemAfterExecute
 
         return $result;
     }
-
 }
