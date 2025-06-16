@@ -17,11 +17,6 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-/**
- * Class InventorySourceItemAfterExecute
- *
- * @package AfterShip\TikTokShop\Plugin
- */
 class InventorySourceItemAfterExecute
 {
     /**
@@ -86,36 +81,22 @@ class InventorySourceItemAfterExecute
         $result,
         array $sourceItems
     ) {
-        $isFromStockSourcesCsvImport = $this->_isFromStockSourcesCsvImport();
+        try {
 
-        if (empty($sourceItems) || !$isFromStockSourcesCsvImport) {
-            return $result;
+            if (empty($sourceItems)) {
+                return $result;
+            }
+
+            $this->eventManager->dispatch(
+                'aftership_inventory_source_item_save_after',
+                ['items' => $sourceItems]
+            );
+        } catch (\Exception $e) {
+            $this->logger->warning(
+                sprintf('[AfterShip TikTokShop] Inventory Source Item afterExecute error: %s', $e->getMessage())
+            );
         }
-
-        $this->eventManager->dispatch(
-            'aftership_inventory_source_item_save_after',
-            ['items' => $sourceItems]
-        );
 
         return $result;
-    }
-
-    /**
-     * Check if the request is from stock sources CSV import
-     *
-     * @return bool
-     */
-    private function _isFromStockSourcesCsvImport()
-    {
-        $requestPath = $this->request->getPathInfo();
-        
-        if (strpos($requestPath, '/admin/import/start/') !== false) {
-            $entityType = $this->request->getParam('entity');
-            if ($entityType === 'stock_sources') {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

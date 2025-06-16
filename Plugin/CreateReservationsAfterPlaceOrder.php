@@ -123,7 +123,7 @@ class CreateReservationsAfterPlaceOrder
         } catch (\Exception $e) {
             $result['status'] = 'failed';
             $result['message'] = $e->getMessage();
-            $this->logger->error(
+            $this->logger->warning(
                 sprintf(
                     '[AfterShip TikTokShop] Failed to create reservation for order %s using method: %s, error message: %s',
                     $order->getIncrementId(),
@@ -227,7 +227,7 @@ class CreateReservationsAfterPlaceOrder
         
         $this->logger->info(
             sprintf(
-                '[AfterShip TikTokShop] Processing to create reservation for order %s',
+                '[AfterShip TikTokShop] Processing sendSalesEvent for order %s',
                 $order->getIncrementId()
             )
         );
@@ -257,7 +257,7 @@ class CreateReservationsAfterPlaceOrder
                 true
             );
         } catch (\Exception $e) {
-            $this->logger->error(
+            $this->logger->warning(
                 sprintf(
                     '[AfterShip TikTokShop] Failed to set inventory reservation header: %s',
                     $e->getMessage()
