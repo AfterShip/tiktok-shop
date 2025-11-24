@@ -20,6 +20,9 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use AfterShip\TikTokShop\Helper\CommonHelper;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
+use Magento\Framework\Api\ExtensionAttributesFactory;
+use AfterShip\TikTokShop\Api\Data\ProductChangeType;
+use Magento\Framework\ObjectManagerInterface;
 
 /**
  * Observer for inventory source item save after
@@ -62,6 +65,20 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
     protected $configurableProduct;
 
     /**
+     * Extension attributes factory
+     *
+     * @var ExtensionAttributesFactory
+     */
+    protected $extensionAttributesFactory;
+
+    /**
+     * Object manager
+     *
+     * @var ObjectManagerInterface
+     */
+    protected $objectManager;
+
+    /**
      * Construct
      *
      * @param LoggerInterface $logger
@@ -69,19 +86,25 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
      * @param WebhookPublisher $publisher
      * @param CommonHelper $commonHelper
      * @param Configurable $configurableProduct
+     * @param ExtensionAttributesFactory $extensionAttributesFactory
+     * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
         LoggerInterface $logger,
         ProductRepositoryInterface $productRepository,
         WebhookPublisher $publisher,
         CommonHelper $commonHelper,
-        Configurable $configurableProduct
+        Configurable $configurableProduct,
+        ExtensionAttributesFactory $extensionAttributesFactory,
+        ObjectManagerInterface $objectManager
     ) {
         $this->logger = $logger;
         $this->productRepository = $productRepository;
         $this->publisher = $publisher;
         $this->commonHelper = $commonHelper;
         $this->configurableProduct = $configurableProduct;
+        $this->extensionAttributesFactory = $extensionAttributesFactory;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -132,27 +155,8 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
             try {
                 $sku = $sourceItem->getSku();
                 $product = $this->productRepository->get($sku);
-                $productType = $product->getTypeId();
+                $productIdsToNotify[] = $product->getId();
 
-                // get product id by product type
-                switch ($productType) {
-                    case 'simple':
-                    case 'virtual':
-                    case 'downloadable':
-                        // check if the product is configurable
-                        $parentIds = $this->configurableProduct->getParentIdsByChild($product->getId());
-                        if (!empty($parentIds)) {
-                            foreach ($parentIds as $parentId) {
-                                $productIdsToNotify[] = $parentId;
-                            }
-                        } else {
-                            $productIdsToNotify[] = $product->getId();
-                        }
-                        break;
-                    default:
-                        $productIdsToNotify[] = $product->getId();
-                        break;
-                }
             } catch (NoSuchEntityException $e) {
                 $this->logger->warning(
                     sprintf(
@@ -177,10 +181,25 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
 
         foreach ($uniqueProductIds as $productId) {
             try {
-                $event = new WebhookEvent();
+                $event = $this->objectManager->create(WebhookEvent::class);
                 $event->setId($productId)
                     ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)
                     ->setEvent(Constants::WEBHOOK_EVENT_UPDATE);
+                
+                $extensionAttributes = null;
+                if (method_exists($event, 'getExtensionAttributes')) {
+                    $extensionAttributes = $event->getExtensionAttributes();
+                }
+                if (!$extensionAttributes) {
+                    $extensionAttributes = $this->extensionAttributesFactory->create(
+                        WebhookEvent::class
+                    );
+                }
+                $extensionAttributes->setProductChangeType(ProductChangeType::STOCK);
+                if (method_exists($event, 'setExtensionAttributes')) {
+                    $event->setExtensionAttributes($extensionAttributes);
+                }
+                
                 $this->publisher->execute($event);
             } catch (\Exception $e) {
                 $this->logger->warning(
