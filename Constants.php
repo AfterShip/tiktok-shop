@@ -24,6 +24,8 @@ class Constants
     public const HEADER_INVENTORY_BEHAVIOUR = 'as-inventory-behaviour';
     public const HEADER_INVENTORY_BEHAVIOUR_VALUE_INCREMENT = 'increment';
 
+    public const HEADER_BATCH_STOCK_QUERY = 'as-batch-stock-query';
+
     public const WEBHOOK_MESSAGE_QUEUE_TOPIC = 'aftership.webhook.events';
     public const WEBHOOK_EVENT_UPDATE = 'update';
     public const WEBHOOK_EVENT_DELETE = 'delete';

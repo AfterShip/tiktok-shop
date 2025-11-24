@@ -10,8 +10,9 @@
 
 namespace AfterShip\TikTokShop\Model\Api;
 
-use Magento\Framework\DataObject;
+use Magento\Framework\Api\AbstractExtensibleObject;
 use AfterShip\TikTokShop\Api\Data\WebhookEventInterface;
+use AfterShip\TikTokShop\Api\Data\WebhookEventExtensionInterface;
 
 /**
  * WebhookEvent model for webhook.
@@ -20,7 +21,7 @@ use AfterShip\TikTokShop\Api\Data\WebhookEventInterface;
  * @license  MIT http://opensource.org/licenses/MIT
  * @link     https://aftership.com
  */
-class WebhookEvent extends DataObject implements WebhookEventInterface
+class WebhookEvent extends AbstractExtensibleObject implements WebhookEventInterface
 {
     /**
      * GetId
@@ -29,7 +30,7 @@ class WebhookEvent extends DataObject implements WebhookEventInterface
      */
     public function getId()
     {
-        return $this->_getData(self::DATA_ID);
+        return $this->_data[self::DATA_ID] ?? null;
     }
     /**
      * GetResource
@@ -38,7 +39,7 @@ class WebhookEvent extends DataObject implements WebhookEventInterface
      */
     public function getResource()
     {
-        return $this->_getData(self::DATA_RESOURCE);
+        return $this->_data[self::DATA_RESOURCE] ?? null;
     }
 
     /**
@@ -48,7 +49,7 @@ class WebhookEvent extends DataObject implements WebhookEventInterface
      */
     public function getEvent()
     {
-        return $this->_getData(self::DATA_EVENT);
+        return $this->_data[self::DATA_EVENT] ?? null;
     }
 
     /**
@@ -85,5 +86,27 @@ class WebhookEvent extends DataObject implements WebhookEventInterface
     public function setEvent($event)
     {
         return $this->setData(self::DATA_EVENT, $event);
+    }
+
+    /**
+     * Retrieve existing extension attributes object or create a new one.
+     *
+     * @return WebhookEventExtensionInterface|null
+     */
+    public function getExtensionAttributes()
+    {
+        return $this->_getExtensionAttributes();
+    }
+
+    /**
+     * Set an extension attributes object.
+     *
+     * @param WebhookEventExtensionInterface $extensionAttributes
+     * @return $this
+     */
+    public function setExtensionAttributes(
+        WebhookEventExtensionInterface $extensionAttributes
+    ) {
+        return $this->_setExtensionAttributes($extensionAttributes);
     }
 }
