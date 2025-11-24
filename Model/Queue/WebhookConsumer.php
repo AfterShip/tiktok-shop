@@ -115,32 +115,60 @@ class WebhookConsumer
     public function execute(WebhookEventInterface $message)
     {
         try {
-//             $this->logger->info(sprintf(
-//                 "[AfterShip TikTokShop] webhook event received: id:%s,resource:%s,event:%s,date:%s",
-//                 $message->getId(),
-//                 $message->getResource(),
-//                 $message->getEvent(),
-//                 date('Y-m-d H:i:s')
-//             ));
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] webhook event received: id:%s,resource:%s,event:%s,date:%s",
+                $message->getId(),
+                $message->getResource(),
+                $message->getEvent(),
+                date('Y-m-d H:i:s')
+            ));
             switch ($message->getResource()) {
                 case Constants::WEBHOOK_RESOURCE_PRODUCTS:
+                    $this->logger->debug(sprintf(
+                        "[AfterShip TikTokShop] Processing product webhook: id:%s,event:%s",
+                        $message->getId(),
+                        $message->getEvent()
+                    ));
                     $this->sendProductWebhook($message->getEvent(), $message->getId(), $message);
                     break;
 
                 case Constants::WEBHOOK_RESOURCE_ORDERS:
+                    $this->logger->debug(sprintf(
+                        "[AfterShip TikTokShop] Processing order webhook: id:%s,event:%s",
+                        $message->getId(),
+                        $message->getEvent()
+                    ));
                     $this->sendOrderWebhook($message->getEvent(), $message->getId());
                     break;
 
                 case Constants::WEBHOOK_RESOURCE_CREDITMEMOS:
+                    $this->logger->debug(sprintf(
+                        "[AfterShip TikTokShop] Processing creditmemo webhook: id:%s,event:%s",
+                        $message->getId(),
+                        $message->getEvent()
+                    ));
                     $this->sendCreditmemoWebhook($message->getEvent(), $message->getId());
                     break;
 
                 default:
+                    $this->logger->debug(sprintf(
+                        "[AfterShip TikTokShop] Unknown webhook resource: %s,id:%s,event:%s",
+                        $message->getResource(),
+                        $message->getId(),
+                        $message->getEvent()
+                    ));
                     break;
 
             }
         } catch (\Exception $e) {
-            $this->logger->info(sprintf("[AfterShip TikTokShop] webhook send failed. error:", $e->getMessage()));
+            $this->logger->error(sprintf(
+                "[AfterShip TikTokShop] webhook send failed. error: %s, message_id:%s, resource:%s, event:%s, trace:%s",
+                $e->getMessage(),
+                $message->getId(),
+                $message->getResource(),
+                $message->getEvent(),
+                $e->getTraceAsString()
+            ));
         }
     }
 
@@ -155,6 +183,10 @@ class WebhookConsumer
     public function sendOrderWebhook($event, $orderId)
     {
         if ($event == Constants::WEBHOOK_EVENT_DELETE) {
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] Sending order delete webhook: order_id:%s",
+                $orderId
+            ));
             return $this->webhookHelper->makeWebhookRequest(
                 Constants::WEBHOOK_TOPIC_ORDERS_DELETE,
                 [
@@ -162,6 +194,10 @@ class WebhookConsumer
                 ]
             );
         }
+        $this->logger->debug(sprintf(
+            "[AfterShip TikTokShop] Sending order update webhook: order_id:%s",
+            $orderId
+        ));
         $this->webhookHelper->makeWebhookRequest(
             Constants::WEBHOOK_TOPIC_ORDERS_UPDATE,
             [
@@ -184,6 +220,10 @@ class WebhookConsumer
     public function sendProductWebhook($event, $productId, $webhookEvent = null)
     {
         if ($event == Constants::WEBHOOK_EVENT_DELETE) {
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] Sending product delete webhook: product_id:%s",
+                $productId
+            ));
             return $this->webhookHelper->makeWebhookRequest(
                 Constants::WEBHOOK_TOPIC_PRODUCTS_DELETE,
                 [
@@ -191,9 +231,22 @@ class WebhookConsumer
                 ]
             );
         }
+        $this->logger->debug(sprintf(
+            "[AfterShip TikTokShop] Processing product update webhook: product_id:%s",
+            $productId
+        ));
         $product = $this->productRepository->getById($productId);
         $parentIds = $this->getParentProductIds($productId);
         $topic = Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE;
+        
+        $this->logger->debug(sprintf(
+            "[AfterShip TikTokShop] Product details: id:%s,sku:%s,type_id:%s,visibility:%s,parent_ids:%s",
+            $productId,
+            $product->getSku(),
+            $product->getTypeId(),
+            $product->getVisibility(),
+            implode(',', $parentIds)
+        ));
         
         // Get change_type from extension attributes
         $changeType = null;
@@ -206,7 +259,18 @@ class WebhookConsumer
             }
         }
         
+        $this->logger->debug(sprintf(
+            "[AfterShip TikTokShop] Product change_type: %s, is_stock_change: %s",
+            $changeType ?? 'null',
+            $isStockChange ? 'true' : 'false'
+        ));
+        
         // Send webhook.
+        $this->logger->debug(sprintf(
+            "[AfterShip TikTokShop] Sending product update webhook: product_id:%s,change_type:%s",
+            $productId,
+            $changeType ?? 'null'
+        ));
         $this->webhookHelper->makeWebhookRequest(
             $topic,
             [
@@ -221,8 +285,18 @@ class WebhookConsumer
         
         // Skip parent product webhooks if change_type is STOCK
         if (!$isStockChange) {
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] Sending parent product webhooks: parent_count:%d",
+                count($parentIds)
+            ));
             foreach ($parentIds as $parentId) {
                 $parentProduct = $this->productRepository->getById($parentId);
+                $this->logger->debug(sprintf(
+                    "[AfterShip TikTokShop] Sending parent product webhook: parent_id:%s,sku:%s,change_type:%s",
+                    $parentId,
+                    $parentProduct->getSku(),
+                    $changeType ?? 'null'
+                ));
                 $this->webhookHelper->makeWebhookRequest(
                     $topic,
                     [
@@ -234,6 +308,11 @@ class WebhookConsumer
                     ]
                 );
             }
+        } else {
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] Skipping parent product webhooks (stock change): product_id:%s",
+                $productId
+            ));
         }
     }
 
@@ -248,12 +327,22 @@ class WebhookConsumer
     public function sendCreditmemoWebhook($event, $creditmemoId)
     {
         if ($event == Constants::WEBHOOK_EVENT_UPDATE) {
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] Sending creditmemo update webhook: creditmemo_id:%s",
+                $creditmemoId
+            ));
              $this->webhookHelper->makeWebhookRequest(
                 Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
                 [
                     'id' => $creditmemoId
                 ]
             );
+        } else {
+            $this->logger->debug(sprintf(
+                "[AfterShip TikTokShop] Skipping creditmemo webhook (event not UPDATE): creditmemo_id:%s,event:%s",
+                $creditmemoId,
+                $event
+            ));
         }
     }
 }
