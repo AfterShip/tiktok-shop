@@ -124,14 +124,7 @@ class WebhookConsumer
             ));
             switch ($message->getResource()) {
                 case Constants::WEBHOOK_RESOURCE_PRODUCTS:
-<<<<<<< HEAD
-                    $this->logger->debug(sprintf(
-                        "[AfterShip TikTokShop] Processing product webhook: id:%s,event:%s",
-                        $message->getId(),
-                        $message->getEvent()
-                    ));
-=======
->>>>>>> CNT-36366
+
                     $this->sendProductWebhook($message->getEvent(), $message->getId(), $message);
                     break;
 
@@ -242,18 +235,6 @@ class WebhookConsumer
         $parentIds = $this->getParentProductIds($productId);
         $topic = Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE;
         
-<<<<<<< HEAD
-        $this->logger->debug(sprintf(
-            "[AfterShip TikTokShop] Product details: id:%s,sku:%s,type_id:%s,visibility:%s,parent_ids:%s",
-            $productId,
-            $product->getSku(),
-            $product->getTypeId(),
-            $product->getVisibility(),
-            implode(',', $parentIds)
-        ));
-        
-=======
->>>>>>> CNT-36366
         // Get change_type from extension attributes
         $changeType = null;
         $isStockChange = false;
@@ -265,15 +246,6 @@ class WebhookConsumer
             }
         }
         
-<<<<<<< HEAD
-        $this->logger->debug(sprintf(
-            "[AfterShip TikTokShop] Product change_type: %s, is_stock_change: %s",
-            $changeType ?? 'null',
-            $isStockChange ? 'true' : 'false'
-        ));
-        
-=======
->>>>>>> CNT-36366
         // Send webhook.
         $this->logger->debug(sprintf(
             "[AfterShip TikTokShop] Sending product update webhook: product_id:%s,change_type:%s",
@@ -294,23 +266,8 @@ class WebhookConsumer
         
         // Skip parent product webhooks if change_type is STOCK
         if (!$isStockChange) {
-<<<<<<< HEAD
-            $this->logger->debug(sprintf(
-                "[AfterShip TikTokShop] Sending parent product webhooks: parent_count:%d",
-                count($parentIds)
-            ));
             foreach ($parentIds as $parentId) {
                 $parentProduct = $this->productRepository->getById($parentId);
-                $this->logger->debug(sprintf(
-                    "[AfterShip TikTokShop] Sending parent product webhook: parent_id:%s,sku:%s,change_type:%s",
-                    $parentId,
-                    $parentProduct->getSku(),
-                    $changeType ?? 'null'
-                ));
-=======
-            foreach ($parentIds as $parentId) {
-                $parentProduct = $this->productRepository->getById($parentId);
->>>>>>> CNT-36366
                 $this->webhookHelper->makeWebhookRequest(
                     $topic,
                     [
@@ -322,14 +279,6 @@ class WebhookConsumer
                     ]
                 );
             }
-<<<<<<< HEAD
-        } else {
-            $this->logger->debug(sprintf(
-                "[AfterShip TikTokShop] Skipping parent product webhooks (stock change): product_id:%s",
-                $productId
-            ));
-=======
->>>>>>> CNT-36366
         }
     }
 
