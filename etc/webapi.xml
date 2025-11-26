@@ -23,4 +23,10 @@
             <resource ref="Magento_Backend::store"/>
         </resources>
     </route>
+    <route url="/V1/aftership/stockStatuses/batch" method="GET">
+        <service class="AfterShip\TikTokShop\Api\StockStatusBatchInterface" method="getStockStatuses"/>
+        <resources>
+            <resource ref="Magento_CatalogInventory::cataloginventory"/>
+        </resources>
+    </route>
 </routes>
