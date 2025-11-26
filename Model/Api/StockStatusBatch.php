@@ -13,7 +13,6 @@ namespace AfterShip\TikTokShop\Model\Api;
 use AfterShip\TikTokShop\Api\StockStatusBatchInterface;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Phrase;
 use Psr\Log\LoggerInterface;
 
