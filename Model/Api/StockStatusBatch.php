@@ -12,6 +12,7 @@ namespace AfterShip\TikTokShop\Model\Api;
 
 use AfterShip\TikTokShop\Api\StockStatusBatchInterface;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
+use Magento\Framework\Api\ExtensionAttributesFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Psr\Log\LoggerInterface;
@@ -36,17 +37,25 @@ class StockStatusBatch implements StockStatusBatchInterface
     protected $logger;
 
     /**
+     * @var ExtensionAttributesFactory
+     */
+    protected $extensionAttributesFactory;
+
+    /**
      * Constructor
      *
      * @param StockRegistryInterface $stockRegistry
      * @param LoggerInterface $logger
+     * @param ExtensionAttributesFactory $extensionAttributesFactory
      */
     public function __construct(
         StockRegistryInterface $stockRegistry,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ExtensionAttributesFactory $extensionAttributesFactory
     ) {
         $this->stockRegistry = $stockRegistry;
         $this->logger = $logger;
+        $this->extensionAttributesFactory = $extensionAttributesFactory;
     }
 
     /**
@@ -80,6 +89,14 @@ class StockStatusBatch implements StockStatusBatchInterface
                 $stockStatus = $this->stockRegistry->getStockStatusBySku($sku, $scopeId);
 
                 if ($stockStatus) {
+                    $extensionAttributes = $stockStatus->getExtensionAttributes();
+                    if ($extensionAttributes === null) {
+                        $extensionAttributes = $this->extensionAttributesFactory->create(
+                            \Magento\CatalogInventory\Api\Data\StockStatusInterface::class
+                        );
+                    }
+                    $extensionAttributes->setSku($sku);
+                    $stockStatus->setExtensionAttributes($extensionAttributes);
                     $result[] = $stockStatus;
                 }
             }catch (\Exception $e) {
