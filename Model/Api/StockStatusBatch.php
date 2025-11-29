@@ -62,15 +62,26 @@ class StockStatusBatch implements StockStatusBatchInterface
      * Get stock statuses for multiple SKUs.
      *
      * @param int $scopeId
-     * @param string[] $skus Array of SKUs
+     * @param string $skus Comma-separated SKUs
      *
      * @return array
      *
      * @throws LocalizedException
      */
-    public function getStockStatuses($scopeId, array $skus)
+    public function getStockStatuses($scopeId, $skus)
     {
         if (empty($skus)) {
+            throw new LocalizedException(
+                new Phrase('SKUs parameter is required.'),
+                null,
+                400
+            );
+        }
+
+        // Split comma-separated SKUs into array
+        $skuArray = array_filter(array_map('trim', explode(',', $skus)));
+        
+        if (empty($skuArray)) {
             throw new LocalizedException(
                 new Phrase('SKUs parameter is required.'),
                 null,
@@ -81,8 +92,7 @@ class StockStatusBatch implements StockStatusBatchInterface
         // Build result using StockRegistry API
         // Magento will automatically handle Default Stock vs MSI via plugin
         $result = [];
-        foreach ($skus as $sku) {
-            $sku = trim($sku);
+        foreach ($skuArray as $sku) {
             try {
                 // Use StockRegistry API - it will automatically adapt MSI via plugin
                 // See: Magento\InventoryCatalog\Plugin\CatalogInventory\Api\StockRegistry\AdaptGetStockStatusBySkuPlugin
