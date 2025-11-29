@@ -23,9 +23,9 @@ interface StockStatusBatchInterface
      * Get stock statuses for multiple SKUs.
      *
      * @param int $scopeId
-     * @param string[] $skus Array of SKUs
+     * @param string $skus Comma-separated SKUs
      *
      * @return \Magento\CatalogInventory\Api\Data\StockStatusInterface[]
      */
-    public function getStockStatuses($scopeId, array $skus);
+    public function getStockStatuses($scopeId, $skus);
 }
