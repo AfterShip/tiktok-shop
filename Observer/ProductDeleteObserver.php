@@ -84,6 +84,9 @@ class ProductDeleteObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            $this->logger->debug(
+                '[AfterShip TikTokShop] ProductDeleteObserver triggered'
+            );
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
                 $this->logger->error(
                     '[AfterShip TikTokShop] ProductDeleteObserver do not sync inventory during performance test'
@@ -93,6 +96,12 @@ class ProductDeleteObserver implements ObserverInterface
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
+            $this->logger->debug(
+                sprintf(
+                    '[AfterShip TikTokShop] ProductDeleteObserver processing product ID: %s',
+                    $productId
+                )
+            );
             $event = $this->objectManager->create(WebhookEvent::class);
             $event->setId($productId)
                 ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)

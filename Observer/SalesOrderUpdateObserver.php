@@ -106,6 +106,13 @@ class SalesOrderUpdateObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            $eventName = $observer->getEvent()->getName();
+            $this->logger->debug(
+                sprintf(
+                    '[AfterShip TikTokShop] SalesOrderUpdateObserver triggered by event: %s',
+                    $eventName
+                )
+            );
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
                 $this->logger->error(
                     '[AfterShip TikTokShop] SalesOrderUpdateObserver do not sync inventory during performance test'
@@ -114,7 +121,6 @@ class SalesOrderUpdateObserver implements ObserverInterface
             }
             $order = null;
             $webhookEvent = Constants::WEBHOOK_EVENT_UPDATE;
-            $eventName = $observer->getEvent()->getName();
             switch ($eventName) {
                 case 'sales_order_shipment_save_after':
                     $shipment = $observer->getEvent()->getShipment();

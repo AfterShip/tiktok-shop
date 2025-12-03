@@ -117,7 +117,13 @@ class InventoryUpdateObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            $this->logger->debug(
+                '[AfterShip TikTokShop] InventoryUpdateObserver triggered'
+            );
             if (!$this->isRestfulApiRequest()) {
+                $this->logger->debug(
+                    '[AfterShip TikTokShop] InventoryUpdateObserver skipped: not a RESTful API request'
+                );
                 return;
             }
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
@@ -128,6 +134,12 @@ class InventoryUpdateObserver implements ObserverInterface
             }
             $stockItem = $observer->getItem();
             $productId = $stockItem->getProductId();
+            $this->logger->debug(
+                sprintf(
+                    '[AfterShip TikTokShop] InventoryUpdateObserver processing product ID: %s',
+                    $productId
+                )
+            );
             $event = $this->objectManager->create(WebhookEvent::class);
             $event->setId($productId)
                 ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)

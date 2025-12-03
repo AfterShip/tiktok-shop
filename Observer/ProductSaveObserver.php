@@ -96,6 +96,9 @@ class ProductSaveObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            $this->logger->debug(
+                '[AfterShip TikTokShop] ProductSaveObserver triggered'
+            );
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
                 $this->logger->error(
                     '[AfterShip TikTokShop] ProductSaveObserver do not sync inventory during performance test'
@@ -105,6 +108,12 @@ class ProductSaveObserver implements ObserverInterface
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
+            $this->logger->debug(
+                sprintf(
+                    '[AfterShip TikTokShop] ProductSaveObserver processing product ID: %s',
+                    $productId
+                )
+            );
             $event = $this->objectManager->create(WebhookEvent::class);
             $event->setId($productId)
                 ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)

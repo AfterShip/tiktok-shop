@@ -117,6 +117,9 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
     public function execute(Observer $observer)
     {
         try {
+            $this->logger->debug(
+                '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver triggered'
+            );
             if ($this->commonHelper->isRunningUnderPerformanceTest()) {
                 $this->logger->warning(
                     '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver do not handle during performance test'
@@ -125,6 +128,12 @@ class InventorySourceItemSaveAfterObserver implements ObserverInterface
             }
 
             $sourceItems = $observer->getData('items') ?? [];
+            $this->logger->debug(
+                sprintf(
+                    '[AfterShip TikTokShop] InventorySourceItemSaveAfterObserver processing %d source item(s)',
+                    count($sourceItems)
+                )
+            );
 
             // process source items from import
             $this->_processSourceItems($sourceItems);
