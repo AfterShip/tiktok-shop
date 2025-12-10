@@ -249,11 +249,11 @@ class WebhookConsumer
     {
         if ($event == Constants::WEBHOOK_EVENT_UPDATE) {
              $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
-                [
+                 Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
+                 [
                     'id' => $creditmemoId
-                ]
-            );
+                 ]
+             );
         }
     }
 }

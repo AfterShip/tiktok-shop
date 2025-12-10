@@ -29,4 +29,3 @@ class ProductChangeType
      */
     public const BASIC = 'basic';
 }
-
