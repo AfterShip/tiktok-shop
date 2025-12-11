@@ -17,6 +17,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 /**
  * Send webhook when get product delete event.
@@ -47,20 +48,30 @@ class ProductDeleteObserver implements ObserverInterface
     protected $commonHelper;
 
     /**
+     * Object manager
+     *
+     * @var ObjectManagerInterface
+     */
+    protected $objectManager;
+
+    /**
      * Construct
      *
      * @param LoggerInterface $logger
      * @param WebhookPublisher $publisher
      * @param CommonHelper $commonHelper
+     * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
         LoggerInterface $logger,
         WebhookPublisher $publisher,
-        CommonHelper $commonHelper
+        CommonHelper $commonHelper,
+        ObjectManagerInterface $objectManager
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
         $this->commonHelper = $commonHelper;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -82,7 +93,7 @@ class ProductDeleteObserver implements ObserverInterface
             /* @var \Magento\Catalog\Model\Product $product */
             $product = $observer->getEvent()->getProduct();
             $productId = $product->getId();
-            $event = new WebhookEvent();
+            $event = $this->objectManager->create(WebhookEvent::class);
             $event->setId($productId)
                 ->setResource(Constants::WEBHOOK_RESOURCE_PRODUCTS)
                 ->setEVent(Constants::WEBHOOK_EVENT_DELETE);

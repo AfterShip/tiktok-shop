@@ -4,4 +4,10 @@
         <attribute code="permissions" type="string"/>
         <attribute code="aftership_tiktok" type="string"/>
     </extension_attributes>
+    <extension_attributes for="AfterShip\TikTokShop\Api\Data\WebhookEventInterface">
+        <attribute code="product_change_type" type="string"/>
+    </extension_attributes>
+    <extension_attributes for="Magento\CatalogInventory\Api\Data\StockStatusInterface">
+        <attribute code="sku" type="string"/>
+    </extension_attributes>
 </config>

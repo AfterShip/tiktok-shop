@@ -18,6 +18,7 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Bundle\Model\Product\Type as Bundle;
 use AfterShip\TikTokShop\Api\Data\WebhookEventInterface;
 use AfterShip\TikTokShop\Helper\WebhookHelper;
+use AfterShip\TikTokShop\Api\Data\ProductChangeType;
 
 /**
  * Consumer for webhook events.
@@ -123,7 +124,7 @@ class WebhookConsumer
 //             ));
             switch ($message->getResource()) {
                 case Constants::WEBHOOK_RESOURCE_PRODUCTS:
-                    $this->sendProductWebhook($message->getEvent(), $message->getId());
+                    $this->sendProductWebhook($message->getEvent(), $message->getId(), $message);
                     break;
 
                 case Constants::WEBHOOK_RESOURCE_ORDERS:
@@ -174,12 +175,13 @@ class WebhookConsumer
      *
      * @param string $event
      * @param string $productId
+     * @param WebhookEventInterface|null $webhookEvent
      *
      * @return void
      *
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function sendProductWebhook($event, $productId)
+    public function sendProductWebhook($event, $productId, $webhookEvent = null)
     {
         if ($event == Constants::WEBHOOK_EVENT_DELETE) {
             return $this->webhookHelper->makeWebhookRequest(
@@ -192,6 +194,18 @@ class WebhookConsumer
         $product = $this->productRepository->getById($productId);
         $parentIds = $this->getParentProductIds($productId);
         $topic = Constants::WEBHOOK_TOPIC_PRODUCTS_UPDATE;
+        
+        // Get change_type from extension attributes
+        $changeType = null;
+        $isStockChange = false;
+        if ($webhookEvent && method_exists($webhookEvent, 'getExtensionAttributes')) {
+            $extensionAttributes = $webhookEvent->getExtensionAttributes();
+            if ($extensionAttributes && method_exists($extensionAttributes, 'getProductChangeType')) {
+                $changeType = $extensionAttributes->getProductChangeType();
+                $isStockChange = ($changeType === ProductChangeType::STOCK);
+            }
+        }
+        
         // Send webhook.
         $this->webhookHelper->makeWebhookRequest(
             $topic,
@@ -201,19 +215,25 @@ class WebhookConsumer
                 "sku" => $product->getSku(),
                 "visibility" => (string)$product->getVisibility(),
                 "parent_ids" => array_map('strval', $parentIds),
+                "change_type" => $changeType,
             ]
         );
-        foreach ($parentIds as $parentId) {
-            $parentProduct = $this->productRepository->getById($parentId);
-            $this->webhookHelper->makeWebhookRequest(
-                $topic,
-                [
-                    "id" => (string)$parentId,
-                    "type_id" => $parentProduct->getTypeId(),
-                    "sku" => $parentProduct->getSku(),
-                    "visibility" => (string)$parentProduct->getVisibility(),
-                ]
-            );
+        
+        // Skip parent product webhooks if change_type is STOCK
+        if (!$isStockChange) {
+            foreach ($parentIds as $parentId) {
+                $parentProduct = $this->productRepository->getById($parentId);
+                $this->webhookHelper->makeWebhookRequest(
+                    $topic,
+                    [
+                        "id" => (string)$parentId,
+                        "type_id" => $parentProduct->getTypeId(),
+                        "sku" => $parentProduct->getSku(),
+                        "visibility" => (string)$parentProduct->getVisibility(),
+                        "change_type" => $changeType,
+                    ]
+                );
+            }
         }
     }
 
@@ -229,11 +249,11 @@ class WebhookConsumer
     {
         if ($event == Constants::WEBHOOK_EVENT_UPDATE) {
              $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
-                [
+                 Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
+                 [
                     'id' => $creditmemoId
-                ]
-            );
+                 ]
+             );
         }
     }
 }

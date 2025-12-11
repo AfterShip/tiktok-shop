@@ -3,6 +3,7 @@
     <preference for="AfterShip\TikTokShop\Api\WebhookEntityInterface" type="AfterShip\TikTokShop\Model\Api\WebhookRequest"/>
     <preference for="AfterShip\TikTokShop\Api\WebhookManagementInterface" type="AfterShip\TikTokShop\Model\Api\WebhookManagement"/>
     <preference for="AfterShip\TikTokShop\Api\Data\WebhookEventInterface" type="AfterShip\TikTokShop\Model\Api\WebhookEvent"/>
+    <preference for="AfterShip\TikTokShop\Api\StockStatusBatchInterface" type="AfterShip\TikTokShop\Model\Api\StockStatusBatch"/>
     <type name="Magento\Sales\Api\CreditmemoRepositoryInterface">
         <plugin name="creditmemo_update_listener" type="AfterShip\TikTokShop\Plugin\CreditmemoUpdateListener"/>
     </type>
