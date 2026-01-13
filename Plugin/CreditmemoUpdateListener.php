@@ -7,6 +7,7 @@ use AfterShip\TikTokShop\Model\Api\WebhookEvent;
 use AfterShip\TikTokShop\Model\Queue\WebhookPublisher;
 use Psr\Log\LoggerInterface;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 class CreditmemoUpdateListener
 {
@@ -24,12 +25,21 @@ class CreditmemoUpdateListener
      */
     protected $publisher;
 
+    /**
+     * Object manager
+     *
+     * @var ObjectManagerInterface
+     */
+    protected $objectManager;
+
     public function __construct(
         LoggerInterface  $logger,
-        WebhookPublisher $publisher
+        WebhookPublisher $publisher,
+        ObjectManagerInterface $objectManager
     ) {
         $this->logger = $logger;
         $this->publisher = $publisher;
+        $this->objectManager = $objectManager;
     }
 
     /**
@@ -44,13 +54,13 @@ class CreditmemoUpdateListener
         try {
             $creditmemoId = $result->getEntityId();
 
-            $event = new WebhookEvent();
+            $event = $this->objectManager->create(WebhookEvent::class);
             $event->setId($creditmemoId)
                 ->setResource(Constants::WEBHOOK_RESOURCE_CREDITMEMOS)
                 ->setEVent(Constants::WEBHOOK_EVENT_UPDATE);
             $this->publisher->execute($event);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $this->logger->error(
                 sprintf(
                     '[AfterShip TikTokShop] send creditmemo webhook failed after saving, %s',
