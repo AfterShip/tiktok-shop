@@ -298,8 +298,8 @@ class WebhookConsumer
                 $creditmemoId
             ));
              $this->webhookHelper->makeWebhookRequest(
-                Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
-                [
+                 Constants::WEBHOOK_TOPIC_CREDITMEMOS_UPDATE,
+                 [
                     'id' => $creditmemoId
                 ]
             );

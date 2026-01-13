@@ -77,13 +77,13 @@ class StoreConfigExtensionAttributes
     public function getApiScopes()
     {
         $apiScopes = '';
-        try{
+        try {
             $integrationId = $this->userContext->getUserId();
             if ($integrationId) {
                 $scopes = $this->integrationService->getSelectedResources($integrationId);
                 $apiScopes = is_array($scopes) ? implode(',', $scopes) : $scopes;
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
                     '[AfterShip TikTokShop] Failed to get api scopes for integration, %s',
@@ -134,7 +134,7 @@ class StoreConfigExtensionAttributes
                 }
                 $store->setExtensionAttributes($extensionAttributes);
             }
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $this->logger->error(
                 sprintf(
                     '[AfterShip TikTokShop] Failed to set extension attributes for store API, %s',

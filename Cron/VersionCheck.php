@@ -7,7 +7,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Notification\NotifierInterface;
 use Psr\Log\LoggerInterface;
 
-
 class VersionCheck
 {
     /**

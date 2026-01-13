@@ -109,7 +109,7 @@ class StockStatusBatch implements StockStatusBatchInterface
                     $stockStatus->setExtensionAttributes($extensionAttributes);
                     $result[] = $stockStatus;
                 }
-            }catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $this->logger->error(
                     \sprintf(
                         '[AfterShip TikTokShop] Error processing SKU %s: %s',
